@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fire Streaks 🔥 Mad Fire 3.0</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family: Arial;
+text-align: center;
+background: linear-gradient(orange, red);
+color: white;
+transition: 0.5s;
+}
+
+.box{
+background: white;
+color: black;
+width: 90%;
+max-width: 400px;
+margin: auto;
+padding: 20px;
+border-radius: 15px;
+}
+
+button{
+background: orange;
+color: white;
+border: none;
+padding: 12px;
+margin: 5px;
+border-radius: 10px;
+font-size: 16px;
+}
+
+button:hover{
+background: red;
+}
+
+.fire{
+font-size:40px;
+animation: bounce 0.5s infinite alternate;
+}
+
+@keyframes bounce{
+from{transform:translateY(0px);}
+to{transform:translateY(-15px);}
+}
+
+.dragon{
+font-size:60px;
+animation: bounce 0.3s infinite alternate;
+}
+
+input{
+padding:10px;
+font-size:16px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1 id="title">🔥 Fire Streaks 🔥</h1>
+<h3>Created by Mad Fire</h3>
+
+<div id="icon" class="fire">🔥</div>
+
+<br>
+
+<input id="player" placeholder="Enter Player Name">
+
+<br><br>
+
+<button onclick="startQuiz()">Start</button>
+
+<div class="box">
+
+<h2 id="question">Press Start</h2>
+
+<input id="answer">
+
+<br><br>
+
+<button onclick="check()">Submit</button>
+
+<h2 id="score">Fire Streak: 0 🔥</h2>
+
+<h3 id="high">High Score: 0 🏆</h3>
+
+<h3 id="rank"></h3>
+
+</div>
+
+<script>
+
+let q=0;
+let score=0;
+let player="";
+
+let questions=[
+
+["5+5","10"],
+["Sun is a","star"],
+["Capital of India","delhi"],
+["3x3","9"],
+["We breathe","oxygen"],
+["Red planet","mars"],
+["10+10","20"],
+["Largest animal","blue whale"],
+["Water formula","h2o"],
+["Earth is a","planet"]
+
+];
+
+let sound=new Audio(
+"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
+);
+
+function startQuiz(){
+
+player=document.getElementById("player").value;
+
+if(player=="") player="Fire Player";
+
+q=0;
+score=0;
+
+next();
+
+loadHigh();
+
+}
+
+function next(){
+
+document.getElementById("question").innerHTML=
+questions[q][0];
+
+}
+
+function check(){
+
+let ans=
+document.getElementById("answer").value.toLowerCase();
+
+if(ans==questions[q][1]){
+
+score++;
+
+sound.play();
+
+}
+
+q++;
+
+document.getElementById("score").innerHTML=
+player+" Fire Streak: "+score+" 🔥";
+
+dragonMode();
+
+if(q<10){
+
+next();
+
+}
+
+else{
+
+saveHigh();
+
+alert(player+" Final Score: "+score+" 🔥");
+
+}
+
+}
+
+function dragonMode(){
+
+if(score>=7){
+
+document.body.style.background=
+"linear-gradient(black, red)";
+
+document.getElementById("icon").innerHTML="🐉";
+
+document.getElementById("icon").className="dragon";
+
+document.getElementById("title").innerHTML=
+"🐉 DRAGON FIRE MODE 🐉";
+
+document.getElementById("rank").innerHTML=
+"Rank: DRAGON MASTER";
+
+}
+
+else if(score>=4){
+
+document.getElementById("rank").innerHTML=
+"Rank: Fire Warrior";
+
+}
+
+else{
+
+document.getElementById("rank").innerHTML=
+"Rank: Fire Student";
+
+}
+
+}
+
+function saveHigh(){
+
+let high=localStorage.getItem("high") || 0;
+
+if(score>high){
+
+localStorage.setItem("high",score);
+
+}
+
+}
+
+function loadHigh(){
+
+let high=localStorage.getItem("high") || 0;
+
+document.getElementById("high").innerHTML=
+"High Score: "+high+" 🏆";
+
+}
+
+loadHigh();
+
+</script>
+
+</body>
+</html>
