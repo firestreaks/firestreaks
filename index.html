@@ -1,41 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>🐉 Fire Streaks Master Exam</title>
+<title>🔥 Fire Streaks Master Exam FINAL</title>
 
 <style>
-
 body{
-font-family: Arial;
-background: linear-gradient(black, red);
-color: white;
-text-align: center;
+font-family:Arial;
+background:linear-gradient(black,red);
+color:white;
+text-align:center;
 }
 
 .box{
-background: white;
-color: black;
-padding: 20px;
-border-radius: 20px;
-width: 90%;
-max-width: 600px;
-margin: auto;
-margin-top: 30px;
+background:rgba(0,0,0,0.8);
+padding:20px;
+margin:20px;
+border-radius:20px;
 }
 
 button{
-padding: 12px;
-margin: 10px;
-border: none;
-border-radius: 10px;
-background: red;
-color: white;
-font-size: 18px;
-width: 80%;
-}
-
-button:hover{
-background: darkred;
+display:block;
+margin:10px auto;
+padding:12px;
+font-size:18px;
+background:red;
+color:white;
+border:none;
+border-radius:10px;
+width:250px;
 }
 
 </style>
@@ -43,146 +35,190 @@ background: darkred;
 
 <body>
 
-<h1>🔥 Dragon Master Exam 🐉</h1>
+<h1>🔥 Fire Streaks Master Exam</h1>
 
-<div class="box" id="menu">
+<div class="box">
 
-<h2>Select Test</h2>
+<h2 id="level"></h2>
 
-<button onclick="startTest('science')">Science Test 🔬</button>
-<button onclick="startTest('maths')">Maths Test ➗</button>
-<button onclick="startTest('dragon')">Dragon Test 🐉</button>
-<button onclick="startTest('mixed')">Ultimate Mixed Test 🔥</button>
+<h3 id="question"></h3>
 
-</div>
+<button onclick="answer(0)" id="opt0"></button>
+<button onclick="answer(1)" id="opt1"></button>
+<button onclick="answer(2)" id="opt2"></button>
+<button onclick="answer(3)" id="opt3"></button>
 
-<div class="box" id="quiz" style="display:none;">
+<h3 id="score"></h3>
 
-<h2 id="question"></h2>
-
-<div id="answers"></div>
-
-<h3 id="progress"></h3>
+<h3 id="rank"></h3>
 
 </div>
 
 <script>
 
-let allQuestions = [
+let score=0;
+let level=1;
 
-{type:"science",q:"Red Planet?",a:["Earth","Mars","Venus","Moon"],c:1},
-{type:"science",q:"Gas we breathe?",a:["CO2","Oxygen","Smoke","Fire"],c:1},
+let ranks=[
+"Beginner",
+"Cadet",
+"Student",
+"Scholar",
+"Warrior",
+"Elite",
+"Genius",
+"Master",
+"Legend",
+"Fire God"
+];
 
-{type:"maths",q:"10×10?",a:["50","100","200","10"],c:1},
-{type:"maths",q:"50÷5?",a:["5","10","20","15"],c:1},
+let questions=[
 
-{type:"dragon",q:"Mad Fire power?",a:["Water","Fire","Wind","Ice"],c:1},
-{type:"dragon",q:"Dragon color?",a:["Red","Pink","White","Brown"],c:0},
+// MATHS 1–34
+
+{q:"2+2?",options:["3","4","5","6"],correct:1},
+{q:"5×5?",options:["10","20","25","30"],correct:2},
+{q:"10÷2?",options:["2","3","5","6"],correct:2},
+{q:"9×9?",options:["72","81","91","99"],correct:1},
+{q:"15-5?",options:["5","10","15","20"],correct:1},
+{q:"3×8?",options:["24","26","28","30"],correct:0},
+{q:"100÷10?",options:["5","10","15","20"],correct:1},
+{q:"7×6?",options:["36","42","48","52"],correct:1},
+{q:"Square of 4?",options:["8","12","16","20"],correct:2},
+{q:"12+8?",options:["18","19","20","21"],correct:2},
+{q:"6×7?",options:["40","42","44","46"],correct:1},
+{q:"20-9?",options:["9","10","11","12"],correct:2},
+{q:"5²?",options:["10","15","25","30"],correct:2},
+{q:"8×8?",options:["56","64","72","80"],correct:1},
+{q:"30÷5?",options:["5","6","7","8"],correct:1},
+{q:"11+11?",options:["20","21","22","23"],correct:2},
+{q:"9×4?",options:["32","36","38","40"],correct:1},
+{q:"50÷10?",options:["2","3","5","6"],correct:2},
+{q:"14-6?",options:["6","7","8","9"],correct:2},
+{q:"4×12?",options:["44","46","48","50"],correct:2},
+{q:"6²?",options:["30","32","36","40"],correct:2},
+{q:"10×10?",options:["50","100","150","200"],correct:1},
+{q:"81÷9?",options:["7","8","9","10"],correct:2},
+{q:"13+7?",options:["18","19","20","21"],correct:2},
+{q:"16÷4?",options:["2","3","4","5"],correct:2},
+{q:"3²?",options:["6","9","12","15"],correct:1},
+{q:"45÷5?",options:["7","8","9","10"],correct:2},
+{q:"18+2?",options:["18","19","20","21"],correct:2},
+{q:"7²?",options:["14","21","49","56"],correct:2},
+{q:"100-1?",options:["98","99","100","101"],correct:1},
+{q:"5×9?",options:["40","45","50","55"],correct:1},
+{q:"12×2?",options:["22","24","26","28"],correct:1},
+{q:"21÷3?",options:["6","7","8","9"],correct:1},
+{q:"8+5?",options:["11","12","13","14"],correct:2},
+
+// SCIENCE 35–67
+
+{q:"Water formula?",options:["CO2","H2O","O2","NaCl"],correct:1},
+{q:"Sun is?",options:["Planet","Star","Moon","Rock"],correct:1},
+{q:"Gas we breathe?",options:["Oxygen","CO2","Hydrogen","Helium"],correct:0},
+{q:"Red planet?",options:["Earth","Mars","Jupiter","Venus"],correct:1},
+{q:"Force unit?",options:["Newton","Volt","Meter","Watt"],correct:0},
+{q:"Energy unit?",options:["Joule","Volt","Speed","Mass"],correct:0},
+{q:"Moon is?",options:["Planet","Star","Satellite","Galaxy"],correct:2},
+{q:"Plants make food?",options:["Burning","Photosynthesis","Cooling","Melting"],correct:1},
+{q:"Boiling point water?",options:["50","100","150","200"],correct:1},
+{q:"Human pumps?",options:["Water","Blood","Air","Fire"],correct:1},
+{q:"Earth shape?",options:["Flat","Round","Square","Triangle"],correct:1},
+{q:"Magnet attracts?",options:["Wood","Iron","Plastic","Water"],correct:1},
+{q:"Largest planet?",options:["Earth","Mars","Jupiter","Neptune"],correct:2},
+{q:"Star nearest Earth?",options:["Moon","Mars","Sun","Venus"],correct:2},
+{q:"Solid example?",options:["Air","Water","Ice","Gas"],correct:2},
+{q:"Gas example?",options:["Water","Air","Ice","Rock"],correct:1},
+{q:"Liquid example?",options:["Rock","Water","Iron","Sand"],correct:1},
+{q:"Electric unit?",options:["Volt","Meter","Kg","Liter"],correct:0},
+{q:"Heat is?",options:["Energy","Water","Rock","Gas"],correct:0},
+{q:"Gravity discovered by?",options:["Newton","Einstein","Bell","Tesla"],correct:0},
+{q:"Largest animal?",options:["Elephant","Blue Whale","Lion","Tiger"],correct:1},
+{q:"Sun gives?",options:["Cold","Heat","Water","Wind"],correct:1},
+{q:"Planet we live?",options:["Mars","Earth","Venus","Saturn"],correct:1},
+{q:"Milky Way is?",options:["Planet","Galaxy","Star","Moon"],correct:1},
+{q:"Light travels fastest in?",options:["Water","Air","Vacuum","Glass"],correct:2},
+{q:"Skin color due to?",options:["Blood","Melanin","Bone","Water"],correct:1},
+{q:"Sound travels through?",options:["Vacuum","Medium","Nothing","Dark"],correct:1},
+{q:"Boiling makes?",options:["Gas","Solid","Ice","Rock"],correct:0},
+{q:"Freezing makes?",options:["Gas","Liquid","Solid","Fire"],correct:2},
+{q:"Sunrise direction?",options:["West","East","North","South"],correct:1},
+{q:"Energy from sun?",options:["Solar","Wind","Water","Coal"],correct:0},
+{q:"Heart is?",options:["Organ","Bone","Gas","Liquid"],correct:0},
+{q:"Brain controls?",options:["Body","Water","Fire","Air"],correct:0},
+
+// HISTORY 68–100
+
+{q:"India independence?",options:["1945","1946","1947","1948"],correct:2},
+{q:"Father of India?",options:["Gandhi","Nehru","Modi","Tagore"],correct:0},
+{q:"First PM India?",options:["Gandhi","Nehru","Modi","Rajendra"],correct:1},
+{q:"First President?",options:["Rajendra","Nehru","Gandhi","Modi"],correct:0},
+{q:"Taj Mahal built by?",options:["Akbar","Shah Jahan","Babur","Aurangzeb"],correct:1},
+{q:"Capital India?",options:["Delhi","Mumbai","Chennai","Kolkata"],correct:0},
+{q:"World War 2 ended?",options:["1943","1944","1945","1946"],correct:2},
+{q:"Who discovered America?",options:["Columbus","Newton","Einstein","Bell"],correct:0},
+{q:"Ashoka was?",options:["King","Scientist","Teacher","Doctor"],correct:0},
+{q:"India flag colors?",options:["3","4","5","6"],correct:0},
+{q:"Wheel in flag?",options:["Ashoka Chakra","Sun","Star","Moon"],correct:0},
+{q:"British ruled India?",options:["Yes","No","Maybe","Never"],correct:0},
+{q:"Freedom fighter?",options:["Gandhi","Bell","Tesla","Newton"],correct:0},
+{q:"Qutub Minar is in?",options:["Delhi","Mumbai","Chennai","Goa"],correct:0},
+{q:"Red Fort built by?",options:["Shah Jahan","Akbar","Babur","Ashoka"],correct:0},
+{q:"First man moon?",options:["Neil Armstrong","Newton","Tesla","Bell"],correct:0},
+{q:"India republic?",options:["1950","1947","1948","1952"],correct:0},
+{q:"Akbar was?",options:["King","Doctor","Scientist","Pilot"],correct:0},
+{q:"World War 1?",options:["1914","1920","1930","1940"],correct:0},
+{q:"India is?",options:["Country","Planet","Star","Galaxy"],correct:0},
+{q:"Ancient writing?",options:["Script","Paint","Photo","Video"],correct:0},
+{q:"Old age called?",options:["Ancient","Modern","Future","Present"],correct:0},
+{q:"History studies?",options:["Past","Future","Space","Math"],correct:0},
+{q:"Coins used in?",options:["Trade","War","Food","Water"],correct:0},
+{q:"Kings lived in?",options:["Palace","Tent","Car","Ship"],correct:0},
+{q:"War fought by?",options:["Army","Teacher","Doctor","Farmer"],correct:0},
+{q:"India continent?",options:["Asia","Africa","Europe","Australia"],correct:0},
+{q:"First civilization?",options:["Indus","Mars","Moon","Sun"],correct:0},
+{q:"Ashoka symbol?",options:["Lion","Tiger","Dog","Cat"],correct:0},
+{q:"India national animal?",options:["Tiger","Lion","Dog","Cat"],correct:0},
+{q:"India national bird?",options:["Peacock","Crow","Parrot","Eagle"],correct:0},
+{q:"India national tree?",options:["Banyan","Mango","Apple","Neem"],correct:0},
+{q:"India national flower?",options:["Lotus","Rose","Sunflower","Lily"],correct:0}
 
 ];
 
-// duplicate to make 100
+let current;
 
-while(allQuestions.length < 100){
+function load(){
 
-let copy = allQuestions[Math.floor(Math.random()*allQuestions.length)];
+current=Math.floor(Math.random()*questions.length);
 
-allQuestions.push(copy);
+document.getElementById("question").innerText=questions[current].q;
 
-}
+for(let i=0;i<4;i++)
+document.getElementById("opt"+i).innerText=questions[current].options[i];
 
-let questions = [];
-let current=0;
-let score=0;
+document.getElementById("score").innerText="Score: "+score;
 
-function startTest(type){
+document.getElementById("level").innerText="Level: "+level;
 
-document.getElementById("menu").style.display="none";
-document.getElementById("quiz").style.display="block";
-
-if(type=="mixed"){
-
-questions = shuffle(allQuestions).slice(0,10);
-
-}else{
-
-questions = shuffle(allQuestions.filter(q=>q.type==type)).slice(0,10);
-
-}
-
-current=0;
-score=0;
-
-show();
-
-}
-
-function shuffle(array){
-
-return array.sort(()=>Math.random()-0.5);
-
-}
-
-function show(){
-
-let q=questions[current];
-
-document.getElementById("question").innerHTML=q.q;
-
-let html="";
-
-for(let i=0;i<q.a.length;i++){
-
-html+=`<button onclick="answer(${i})">${q.a[i]}</button>`;
-
-}
-
-document.getElementById("answers").innerHTML=html;
-
-document.getElementById("progress").innerHTML=
-"Question "+(current+1)+"/10";
+document.getElementById("rank").innerText="Rank: "+ranks[level-1];
 
 }
 
 function answer(choice){
 
-if(choice==questions[current].c){
+if(choice==questions[current].correct){
 
 score++;
 
-}
-
-current++;
-
-if(current<questions.length){
-
-show();
-
-}else{
-
-result();
+if(score%10==0 && level<10) level++;
 
 }
 
-}
-
-function result(){
-
-let title="";
-
-if(score<=2) title="Beginner";
-else if(score<=4) title="Student";
-else if(score<=6) title="Warrior";
-else if(score<=8) title="Dragon Warrior";
-else title="ULTIMATE DRAGON MASTER 🐉";
-
-document.getElementById("question").innerHTML=
-"Level: "+score+"/10<br>"+title;
-
-document.getElementById("answers").innerHTML="";
-document.getElementById("progress").innerHTML="";
+load();
 
 }
+
+load();
 
 </script>
 
