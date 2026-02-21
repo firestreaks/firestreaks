@@ -1,469 +1,176 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireStreaks | Level Up</title>
+    <style>
+        /* Flowing Fire Background */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(270deg, #ff4500, #ff8c00, #e25822, #b22222);
+            background-size: 800% 800%;
+            animation: flowingFire 10s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            overflow: hidden;
+        }
 
-<title>🐉 MAD FIRE GOD MODE</title>
+        @keyframes flowingFire {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-<style>
+        #game-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
 
-body{
-font-family:Arial;
-background:black;
-color:white;
-text-align:center;
-}
-
-.box{
-background:#111;
-border:2px solid red;
-padding:20px;
-margin:20px auto;
-width:450px;
-border-radius:10px;
-}
-
-button{
-padding:10px;
-margin:5px;
-font-size:16px;
-background:red;
-color:white;
-border:none;
-}
-
-#store{
-position:fixed;
-bottom:10px;
-left:10px;
-background:#111;
-padding:10px;
-border:2px solid orange;
-}
-
-#bossBar{
-
-width:100%;
-height:20px;
-background:#333;
-
-}
-
-#bossHealth{
-
-height:100%;
-width:100%;
-background:red;
-
-}
-
-</style>
-
+        h1 { font-size: 3rem; margin-bottom: 10px; color: #ffae00; text-shadow: 2px 2px #000; }
+        input { padding: 10px; border-radius: 5px; border: none; width: 80%; margin-bottom: 20px; }
+        button { 
+            padding: 10px 25px; background: #ff4500; border: none; color: white; 
+            font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.3s;
+        }
+        button:hover { background: #ff8c00; transform: scale(1.05); }
+        .hidden { display: none; }
+        .stats { margin-bottom: 15px; font-weight: bold; color: #ffda44; }
+    </style>
 </head>
-
 <body>
 
+<div id="game-container">
+    <h1>FIRESTREAKS</h1>
+    
+    <div id="login-screen">
+        <p>Enter your username to begin the trial by fire:</p>
+        <input type="text" id="username" placeholder="Username...">
+        <br>
+        <button onclick="startGame()">START</button>
+    </div>
 
-<h1>🐉 MAD FIRE GOD MODE</h1>
+    <div id="quiz-screen" class="hidden">
+        <div class="stats">
+            User: <span id="display-name"></span> | Level: <span id="lvl">1</span>/50<br>
+            Question: <span id="q-num">1</span>/10
+        </div>
+        <hr>
+        <h2 id="question-text">Loading question...</h2>
+        <div id="options-container"></div>
+    </div>
 
-
-<div id="start" class="box">
-
-<input id="username" placeholder="Username">
-
-<br><br>
-
-<button onclick="start()">START</button>
-
+    <div id="result-screen" class="hidden">
+        <h2 id="result-msg"></h2>
+        <button id="next-btn" onclick="nextRound()">Next Level</button>
+    </div>
 </div>
-
-
-<div id="game" class="box" style="display:none">
-
-<h3 id="player"></h3>
-
-Level: <span id="level"></span><br>
-
-Score: <span id="score"></span><br>
-
-Rank: <span id="rank"></span>
-
-
-<div id="bossBox" style="display:none">
-
-<h2>🐉 BOSS</h2>
-
-<div id="bossBar">
-
-<div id="bossHealth"></div>
-
-</div>
-
-</div>
-
-
-<h2 id="question"></h2>
-
-<div id="answers"></div>
-
-
-<button onclick="useKatana()">Katana</button>
-
-<button onclick="useMask()">Mask</button>
-
-
-</div>
-
-
-
-<div id="store">
-
-Store<br>
-
-<button onclick="buyKatana()">Katana 50</button><br>
-
-<button onclick="buyMask()">Mask 100</button><br>
-
-K: <span id="katana"></span><br>
-
-M: <span id="mask"></span>
-
-</div>
-
-
 
 <script>
-
-
-let username;
-
-let level=1;
-
-let score=0;
-
-let katana=0;
-
-let mask=0;
-
-let bossHealth=0;
-
-let bossMax=0;
-
-
-
-// LOAD SAVE
-
-if(localStorage.save){
-
-let save=JSON.parse(localStorage.save);
-
-level=save.level;
-
-score=save.score;
-
-katana=save.katana;
-
-mask=save.mask;
-
-}
-
-
-
-// QUESTIONS
-
-let questions=[];
-
-for(let i=1;i<=300;i++){
-
-questions.push({
-
-q:"What is "+i+" + "+i+" ?",
-
-a:[i+i,i,i+1,i+2],
-
-c:0
-
-});
-
-}
-
-
-
-// START
-
-function start(){
-
-username=document.getElementById("username").value;
-
-document.getElementById("start").style.display="none";
-
-document.getElementById("game").style.display="block";
-
-document.getElementById("player").innerHTML=username;
-
-load();
-
-}
-
-
-
-// LOAD QUESTION
-
-function load(){
-
-
-save();
-
-
-update();
-
-
-if(level==10||level==50||level==100){
-
-startBoss();
-
-return;
-
-}
-
-
-let q=questions[level-1];
-
-document.getElementById("question").innerHTML=q.q;
-
-show(q);
-
-}
-
-
-
-// SHOW ANSWERS
-
-function show(q,remove=false){
-
-let html="";
-
-let removed=0;
-
-q.a.forEach((a,i)=>{
-
-if(remove && i!=q.c && removed<2){
-
-removed++;
-
-return;
-
-}
-
-html+=`<button onclick="answer(${i})">${a}</button>`;
-
-});
-
-document.getElementById("answers").innerHTML=html;
-
-}
-
-
-
-// ANSWER
-
-function answer(i){
-
-let q=questions[level-1];
-
-if(i==q.c){
-
-score+=10;
-
-level++;
-
-}
-
-load();
-
-}
-
-
-
-// BOSS
-
-function startBoss(){
-
-document.getElementById("bossBox").style.display="block";
-
-bossMax=100;
-
-bossHealth=bossMax;
-
-boss();
-
-}
-
-
-function boss(){
-
-updateBoss();
-
-
-document.getElementById("question").innerHTML="Attack Boss";
-
-
-document.getElementById("answers").innerHTML=
-
-`<button onclick="attack()">Attack</button>`;
-
-}
-
-
-
-function attack(){
-
-bossHealth-=20;
-
-score+=20;
-
-
-if(bossHealth<=0){
-
-level++;
-
-document.getElementById("bossBox").style.display="none";
-
-load();
-
-}else{
-
-updateBoss();
-
-}
-
-}
-
-
-
-function updateBoss(){
-
-let percent=(bossHealth/bossMax)*100;
-
-document.getElementById("bossHealth").style.width=percent+"%";
-
-}
-
-
-
-// ITEMS
-
-function buyKatana(){
-
-if(score>=50){
-
-score-=50;
-
-katana++;
-
-update();
-
-}
-
-}
-
-
-function buyMask(){
-
-if(score>=100){
-
-score-=100;
-
-mask++;
-
-update();
-
-}
-
-}
-
-
-
-function useKatana(){
-
-if(katana>0){
-
-katana--;
-
-show(questions[level-1],true);
-
-update();
-
-}
-
-}
-
-
-
-function useMask(){
-
-if(mask>0){
-
-mask--;
-
-bossHealth-=40;
-
-updateBoss();
-
-}
-
-}
-
-
-
-// UPDATE
-
-function update(){
-
-document.getElementById("level").innerHTML=level;
-
-document.getElementById("score").innerHTML=score;
-
-document.getElementById("katana").innerHTML=katana;
-
-document.getElementById("mask").innerHTML=mask;
-
-
-let rank="Student";
-
-
-if(level>20)rank="Warrior";
-
-if(level>50)rank="Master";
-
-if(level>100)rank="Legend";
-
-if(level>200)rank="GOD";
-
-
-document.getElementById("rank").innerHTML=rank;
-
-}
-
-
-
-// SAVE
-
-function save(){
-
-localStorage.save=JSON.stringify({
-
-level,score,katana,mask
-
-});
-
-}
-
-
-
+    let user = "";
+    let level = 1;
+    let currentQuestionIdx = 0;
+    let score = 0;
+
+    const subjects = ["Math", "Science", "Geography", "History"];
+
+    function startGame() {
+        user = document.getElementById('username').value;
+        if (!user) return alert("Enter a name!");
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        document.getElementById('display-name').innerText = user;
+        loadQuestion();
+    }
+
+    function generateQuestion(lvl) {
+        const type = subjects[Math.floor(Math.random() * subjects.length)];
+        // Difficulty scaling logic
+        const multiplier = lvl * 2;
+        
+        if (type === "Math") {
+            const a = Math.floor(Math.random() * (10 + lvl));
+            const b = Math.floor(Math.random() * (10 + lvl));
+            return { q: `What is ${a} + ${b}?`, a: (a + b).toString(), options: shuffle([a+b, a+b+2, a+b-1, a+b+5]) };
+        } else if (type === "Science") {
+            return { q: "What is the H2O commonly known as?", a: "Water", options: ["Water", "Fire", "Gold", "Oxygen"] };
+        } else if (type === "Geography") {
+            return { q: "Which planet is known as the Red Planet?", a: "Mars", options: ["Mars", "Venus", "Earth", "Jupiter"] };
+        } else {
+            return { q: "Who was the first US president?", a: "Washington", options: ["Washington", "Lincoln", "Jefferson", "Adams"] };
+        }
+    }
+
+    function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+    function loadQuestion() {
+        const qData = generateQuestion(level);
+        document.getElementById('question-text').innerText = qData.q;
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        
+        qData.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.innerText = opt;
+            btn.style.margin = "5px";
+            btn.onclick = () => checkAnswer(opt, qData.a);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(chosen, correct) {
+        if (chosen == correct) {
+            score++;
+            currentQuestionIdx++;
+            if (currentQuestionIdx < 10) {
+                document.getElementById('q-num').innerText = currentQuestionIdx + 1;
+                loadQuestion();
+            } else {
+                winLevel();
+            }
+        } else {
+            alert("Wrong answer! Restarting Level " + level);
+            resetLevel();
+        }
+    }
+
+    function winLevel() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        if (level >= 50) {
+            document.getElementById('result-msg').innerText = "GOD STATUS REACHED! YOU BEAT THE GAME!";
+            document.getElementById('next-btn').style.display = "none";
+        } else {
+            document.getElementById('result-msg').innerText = `Level ${level} Complete! Perfect 10/10.`;
+            level++;
+        }
+    }
+
+    function nextRound() {
+        score = 0;
+        currentQuestionIdx = 0;
+        document.getElementById('lvl').innerText = level;
+        document.getElementById('q-num').innerText = 1;
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        loadQuestion();
+    }
+
+    function resetLevel() {
+        score = 0;
+        currentQuestionIdx = 0;
+        document.getElementById('q-num').innerText = 1;
+        loadQuestion();
+    }
 </script>
-
-
 </body>
-
 </html>
