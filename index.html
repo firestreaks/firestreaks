@@ -1,241 +1,188 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Fire Streaks 🔥 Mad Fire 3.0</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🐉 Fire Streaks Master Exam</title>
 
 <style>
 
 body{
 font-family: Arial;
-text-align: center;
-background: linear-gradient(orange, red);
+background: linear-gradient(black, red);
 color: white;
-transition: 0.5s;
+text-align: center;
 }
 
 .box{
 background: white;
 color: black;
-width: 90%;
-max-width: 400px;
-margin: auto;
 padding: 20px;
-border-radius: 15px;
+border-radius: 20px;
+width: 90%;
+max-width: 600px;
+margin: auto;
+margin-top: 30px;
 }
 
 button{
-background: orange;
-color: white;
-border: none;
 padding: 12px;
-margin: 5px;
+margin: 10px;
+border: none;
 border-radius: 10px;
-font-size: 16px;
+background: red;
+color: white;
+font-size: 18px;
+width: 80%;
 }
 
 button:hover{
-background: red;
-}
-
-.fire{
-font-size:40px;
-animation: bounce 0.5s infinite alternate;
-}
-
-@keyframes bounce{
-from{transform:translateY(0px);}
-to{transform:translateY(-15px);}
-}
-
-.dragon{
-font-size:60px;
-animation: bounce 0.3s infinite alternate;
-}
-
-input{
-padding:10px;
-font-size:16px;
+background: darkred;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<h1 id="title">🔥 Fire Streaks 🔥</h1>
-<h3>Created by Mad Fire</h3>
+<h1>🔥 Dragon Master Exam 🐉</h1>
 
-<div id="icon" class="fire">🔥</div>
+<div class="box" id="menu">
 
-<br>
+<h2>Select Test</h2>
 
-<input id="player" placeholder="Enter Player Name">
+<button onclick="startTest('science')">Science Test 🔬</button>
+<button onclick="startTest('maths')">Maths Test ➗</button>
+<button onclick="startTest('dragon')">Dragon Test 🐉</button>
+<button onclick="startTest('mixed')">Ultimate Mixed Test 🔥</button>
 
-<br><br>
+</div>
 
-<button onclick="startQuiz()">Start</button>
+<div class="box" id="quiz" style="display:none;">
 
-<div class="box">
+<h2 id="question"></h2>
 
-<h2 id="question">Press Start</h2>
+<div id="answers"></div>
 
-<input id="answer">
-
-<br><br>
-
-<button onclick="check()">Submit</button>
-
-<h2 id="score">Fire Streak: 0 🔥</h2>
-
-<h3 id="high">High Score: 0 🏆</h3>
-
-<h3 id="rank"></h3>
+<h3 id="progress"></h3>
 
 </div>
 
 <script>
 
-let q=0;
-let score=0;
-let player="";
+let allQuestions = [
 
-let questions=[
+{type:"science",q:"Red Planet?",a:["Earth","Mars","Venus","Moon"],c:1},
+{type:"science",q:"Gas we breathe?",a:["CO2","Oxygen","Smoke","Fire"],c:1},
 
-["5+5","10"],
-["Sun is a","star"],
-["Capital of India","delhi"],
-["3x3","9"],
-["We breathe","oxygen"],
-["Red planet","mars"],
-["10+10","20"],
-["Largest animal","blue whale"],
-["Water formula","h2o"],
-["Earth is a","planet"]
+{type:"maths",q:"10×10?",a:["50","100","200","10"],c:1},
+{type:"maths",q:"50÷5?",a:["5","10","20","15"],c:1},
+
+{type:"dragon",q:"Mad Fire power?",a:["Water","Fire","Wind","Ice"],c:1},
+{type:"dragon",q:"Dragon color?",a:["Red","Pink","White","Brown"],c:0},
 
 ];
 
-let sound=new Audio(
-"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
-);
+// duplicate to make 100
 
-function startQuiz(){
+while(allQuestions.length < 100){
 
-player=document.getElementById("player").value;
+let copy = allQuestions[Math.floor(Math.random()*allQuestions.length)];
 
-if(player=="") player="Fire Player";
+allQuestions.push(copy);
 
-q=0;
+}
+
+let questions = [];
+let current=0;
+let score=0;
+
+function startTest(type){
+
+document.getElementById("menu").style.display="none";
+document.getElementById("quiz").style.display="block";
+
+if(type=="mixed"){
+
+questions = shuffle(allQuestions).slice(0,10);
+
+}else{
+
+questions = shuffle(allQuestions.filter(q=>q.type==type)).slice(0,10);
+
+}
+
+current=0;
 score=0;
 
-next();
-
-loadHigh();
+show();
 
 }
 
-function next(){
+function shuffle(array){
 
-document.getElementById("question").innerHTML=
-questions[q][0];
+return array.sort(()=>Math.random()-0.5);
 
 }
 
-function check(){
+function show(){
 
-let ans=
-document.getElementById("answer").value.toLowerCase();
+let q=questions[current];
 
-if(ans==questions[q][1]){
+document.getElementById("question").innerHTML=q.q;
+
+let html="";
+
+for(let i=0;i<q.a.length;i++){
+
+html+=`<button onclick="answer(${i})">${q.a[i]}</button>`;
+
+}
+
+document.getElementById("answers").innerHTML=html;
+
+document.getElementById("progress").innerHTML=
+"Question "+(current+1)+"/10";
+
+}
+
+function answer(choice){
+
+if(choice==questions[current].c){
 
 score++;
 
-sound.play();
-
 }
 
-q++;
+current++;
 
-document.getElementById("score").innerHTML=
-player+" Fire Streak: "+score+" 🔥";
+if(current<questions.length){
 
-dragonMode();
+show();
 
-if(q<10){
+}else{
 
-next();
-
-}
-
-else{
-
-saveHigh();
-
-alert(player+" Final Score: "+score+" 🔥");
+result();
 
 }
 
 }
 
-function dragonMode(){
+function result(){
 
-if(score>=7){
+let title="";
 
-document.body.style.background=
-"linear-gradient(black, red)";
+if(score<=2) title="Beginner";
+else if(score<=4) title="Student";
+else if(score<=6) title="Warrior";
+else if(score<=8) title="Dragon Warrior";
+else title="ULTIMATE DRAGON MASTER 🐉";
 
-document.getElementById("icon").innerHTML="🐉";
+document.getElementById("question").innerHTML=
+"Level: "+score+"/10<br>"+title;
 
-document.getElementById("icon").className="dragon";
-
-document.getElementById("title").innerHTML=
-"🐉 DRAGON FIRE MODE 🐉";
-
-document.getElementById("rank").innerHTML=
-"Rank: DRAGON MASTER";
-
-}
-
-else if(score>=4){
-
-document.getElementById("rank").innerHTML=
-"Rank: Fire Warrior";
+document.getElementById("answers").innerHTML="";
+document.getElementById("progress").innerHTML="";
 
 }
-
-else{
-
-document.getElementById("rank").innerHTML=
-"Rank: Fire Student";
-
-}
-
-}
-
-function saveHigh(){
-
-let high=localStorage.getItem("high") || 0;
-
-if(score>high){
-
-localStorage.setItem("high",score);
-
-}
-
-}
-
-function loadHigh(){
-
-let high=localStorage.getItem("high") || 0;
-
-document.getElementById("high").innerHTML=
-"High Score: "+high+" 🏆";
-
-}
-
-loadHigh();
 
 </script>
 
