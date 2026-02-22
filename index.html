@@ -1,91 +1,106 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>🐉 Mad Fire Ultimate 3D</title>
+<title>🔥 Mad Fire Quiz</title>
 
 <style>
 
 body{
 margin:0;
-overflow:hidden;
 font-family:Arial;
-background:black;
 color:white;
+text-align:center;
+overflow:hidden;
 }
 
-#start{
-position:absolute;
-top:40%;
-left:50%;
-transform:translate(-50%,-50%);
-background:black;
-padding:20px;
-border:2px solid orange;
+/* BLOCK FIRE */
+
+body::before{
+content:"";
+position:fixed;
+width:200%;
+height:200%;
+background:repeating-linear-gradient(
+0deg,
+#ff6600 0px,
+#ff6600 40px,
+#ff0000 40px,
+#ff0000 80px,
+#ffaa00 80px,
+#ffaa00 120px
+);
+animation:fire 8s linear infinite;
+z-index:-1;
 }
 
-#ui{
-position:absolute;
-top:10px;
-left:10px;
+.mediumFire::before{
+animation:fire 5s linear infinite;
+}
+
+.hardFire::before{
+animation:fire 3s linear infinite;
+}
+
+@keyframes fire{
+0%{transform:translateY(0)}
+100%{transform:translateY(-120px)}
+}
+
+.box{
 background:rgba(0,0,0,0.7);
-padding:15px;
-display:none;
+padding:20px;
+margin:40px auto;
+width:400px;
 }
 
 button{
-padding:8px;
-margin:5px;
+padding:10px;
+margin:10px;
+font-size:18px;
 background:orange;
 border:none;
 color:white;
 }
 
-#healthbar{
-width:200px;
-height:20px;
-background:red;
-}
-
-#health{
-height:100%;
-width:100%;
-background:lime;
-}
-
 </style>
-
 </head>
 
 <body>
 
 
-<div id="start">
+<div id="start" class="box">
 
-<h1>🔥 MAD FIRE ULTIMATE 3D</h1>
+<h1>🔥 MAD FIRE</h1>
 
 <input id="username" placeholder="Username">
 
-<button onclick="startGame()">START</button>
+<br><br>
+
+<button onclick="saveUser()">START</button>
 
 </div>
 
 
-<div id="ui">
+<div id="mode" class="box" style="display:none">
 
-<h3 id="player"></h3>
+<h2>Select Level</h2>
 
-Level: <span id="level">1</span><br>
+<button onclick="startGame('easy')">Easy (Class 1)</button>
 
-XP: <span id="xp">0</span>
+<button id="mediumBtn" onclick="startGame('medium')" disabled>
+Medium (Class 6) 🔒</button>
 
-<h4>Health</h4>
-
-<div id="healthbar">
-
-<div id="health"></div>
+<button id="hardBtn" onclick="startGame('hard')" disabled>
+Hard (Class 11–12) 🔒</button>
 
 </div>
 
+
+<div id="game" class="box" style="display:none">
+
+<h2 id="player"></h2>
+
+<h3 id="rank"></h3>
 
 <h3 id="question"></h3>
 
@@ -95,153 +110,111 @@ XP: <span id="xp">0</span>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-
 <script>
 
 
-// PLAYER
-
 let username="";
-let level=1;
-let xp=0;
-let health=100;
+let difficulty="";
+let questionNum=0;
+let wrong=false;
 
-
-// 3D WORLD
-
-let scene=new THREE.Scene();
-
-let camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-
-let renderer=new THREE.WebGLRenderer();
-
-renderer.setSize(window.innerWidth,window.innerHeight);
-
-document.body.appendChild(renderer.domElement);
-
-
-// FLOOR
-
-let floor=new THREE.Mesh(
-
-new THREE.PlaneGeometry(100,100),
-
-new THREE.MeshBasicMaterial({color:0xff4400,side:2})
-
-);
-
-floor.rotation.x=-Math.PI/2;
-
-scene.add(floor);
-
-
-// DRAGON
-
-let dragon=new THREE.Mesh(
-
-new THREE.BoxGeometry(3,2,5),
-
-new THREE.MeshBasicMaterial({color:0xff0000})
-
-);
-
-dragon.position.y=5;
-
-scene.add(dragon);
-
-
-// FIREBALL
-
-let fire=new THREE.Mesh(
-
-new THREE.SphereGeometry(0.5),
-
-new THREE.MeshBasicMaterial({color:0xffaa00})
-
-);
-
-scene.add(fire);
-
-fire.visible=false;
+let mediumUnlocked=false;
+let hardUnlocked=false;
 
 
 
-camera.position.z=15;
+// CLASS 1
 
+let easy=[
 
-
-// ANIMATION
-
-function animate(){
-
-requestAnimationFrame(animate);
-
-
-// flying dragon
-
-dragon.position.x=Math.sin(Date.now()*0.002)*5;
-
-
-// fire attack
-
-if(fire.visible){
-
-fire.position.z+=0.5;
-
-if(fire.position.z>10){
-
-fire.visible=false;
-
-}
-
-}
-
-
-renderer.render(scene,camera);
-
-}
-
-animate();
-
-
-
-
-// QUESTIONS
-
-let questions=[
-
-{q:"Sun is a?",a:["Star","Planet","Moon","Rock"],c:0},
-
-{q:"5×8?",a:["40","30","35","45"],c:0},
-
-{q:"Earth shape?",a:["Sphere","Flat","Cube","Triangle"],c:0},
-
-{q:"India capital?",a:["New Delhi","Kerala","Goa","Mumbai"],c:0}
+{q:"2+2?",a:["4","3","5","6"],c:0},
+{q:"5-3?",a:["2","1","3","4"],c:0},
+{q:"A for?",a:["Apple","Ball","Cat","Dog"],c:0},
+{q:"10+0?",a:["10","9","11","8"],c:0},
+{q:"Sun is hot?",a:["Yes","No","Cold","Ice"],c:0},
+{q:"1+1?",a:["2","3","1","0"],c:0},
+{q:"Colour of sky?",a:["Blue","Red","Green","Black"],c:0},
+{q:"3+1?",a:["4","5","3","2"],c:0},
+{q:"Bird can?",a:["Fly","Swim","Drive","Cook"],c:0},
+{q:"We drink?",a:["Water","Sand","Fire","Stone"],c:0}
 
 ];
 
 
-while(questions.length<200){
+// CLASS 6
 
-questions.push(questions[Math.floor(Math.random()*4)]);
+let medium=[
 
-}
+{q:"12×2?",a:["24","22","26","20"],c:0},
+{q:"15+10?",a:["25","20","30","35"],c:0},
+{q:"Earth shape?",a:["Sphere","Flat","Cube","Line"],c:0},
+{q:"100÷10?",a:["10","5","20","15"],c:0},
+{q:"Prime number?",a:["7","8","9","10"],c:0},
+{q:"Largest planet?",a:["Jupiter","Earth","Mars","Moon"],c:0},
+{q:"50-25?",a:["25","20","30","35"],c:0},
+{q:"Water freezes at?",a:["0°C","10°C","50°C","100°C"],c:0},
+{q:"Square of 5?",a:["25","20","30","35"],c:0},
+{q:"Perimeter means?",a:["Boundary","Area","Volume","Mass"],c:0}
+
+];
+
+
+// CLASS 11–12
+
+let hard=[
+
+{q:"Derivative of x²?",a:["2x","x","1","x²"],c:0},
+{q:"Value of sin90?",a:["1","0","-1","2"],c:0},
+{q:"Speed of light?",a:["3×10⁸","10⁸","10⁶","10⁵"],c:0},
+{q:"Integral of 1/x?",a:["ln x","x","1","x²"],c:0},
+{q:"g value?",a:["9.8","10","8","12"],c:0},
+{q:"log10 100?",a:["2","1","10","0"],c:0},
+{q:"Carbon atomic number?",a:["6","12","14","16"],c:0},
+{q:"Force formula?",a:["ma","mv","mm","mc"],c:0},
+{q:"cos0?",a:["1","0","-1","2"],c:0},
+{q:"π value?",a:["3.14","3","4","2"],c:0}
+
+];
+
 
 
 
 // START
 
-function startGame(){
+function saveUser(){
 
-username=document.getElementById("username").value;
+username=usernameInput.value;
 
-document.getElementById("start").style.display="none";
+start.style.display="none";
 
-document.getElementById("ui").style.display="block";
+mode.style.display="block";
 
-document.getElementById("player").innerHTML=username;
+}
+
+
+
+// START GAME
+
+function startGame(type){
+
+difficulty=type;
+
+mode.style.display="none";
+
+game.style.display="block";
+
+player.innerHTML=username;
+
+questionNum=0;
+wrong=false;
+
+
+document.body.classList.remove("mediumFire","hardFire");
+
+if(type=="medium")document.body.classList.add("mediumFire");
+
+if(type=="hard")document.body.classList.add("hardFire");
+
 
 loadQuestion();
 
@@ -249,27 +222,32 @@ loadQuestion();
 
 
 
-// LOAD QUESTION
+// LOAD
 
 function loadQuestion(){
 
-let q=questions[level-1];
+let set=getSet();
 
-document.getElementById("question").innerHTML=q.q;
+if(questionNum>=10){
 
+win();
 
-let html="";
+return;
 
-q.a.forEach((a,i)=>{
+}
 
-html+=`<button onclick="answer(${i})">${a}</button>`;
+rank.innerHTML=getRank();
+
+question.innerHTML=set[questionNum].q;
+
+answers.innerHTML="";
+
+set[questionNum].a.forEach((a,i)=>{
+
+answers.innerHTML+=
+`<button onclick="answer(${i})">${a}</button>`;
 
 });
-
-
-document.getElementById("answers").innerHTML=html;
-
-updateUI();
 
 }
 
@@ -279,37 +257,17 @@ updateUI();
 
 function answer(i){
 
-let q=questions[level-1];
+let set=getSet();
 
-if(i==q.c){
+if(i!=set[questionNum].c){
 
-xp+=10;
-level++;
+wrong=true;
 
-dragon.scale.x+=0.1;
-
-}else{
-
-
-// DRAGON ATTACK
-
-health-=20;
-
-fire.visible=true;
-
-fire.position.set(dragon.position.x,dragon.position.y,0);
-
-
-if(health<=0){
-
-alert("Game Over");
-
-location.reload();
+alert("Wrong!");
 
 }
 
-}
-
+questionNum++;
 
 loadQuestion();
 
@@ -317,22 +275,69 @@ loadQuestion();
 
 
 
-// UPDATE
+// WIN
 
-function updateUI(){
+function win(){
 
-document.getElementById("level").innerHTML=level;
+if(difficulty=="easy" && !wrong){
 
-document.getElementById("xp").innerHTML=xp;
+mediumUnlocked=true;
+mediumBtn.disabled=false;
 
-document.getElementById("health").style.width=health+"%";
+alert("Medium Unlocked 🔥");
+
+}
+
+else if(difficulty=="medium" && !wrong){
+
+hardUnlocked=true;
+hardBtn.disabled=false;
+
+alert("Hard Unlocked 🔥");
+
+}
+
+else if(difficulty=="hard" && !wrong){
+
+alert("YOU ARE ULTIMATE DRAGON MASTER 🐉🔥");
+
+}
+
+game.style.display="none";
+
+mode.style.display="block";
+
+}
+
+
+
+// HELPERS
+
+function getSet(){
+
+if(difficulty=="easy")return easy;
+
+if(difficulty=="medium")return medium;
+
+return hard;
+
+}
+
+
+function getRank(){
+
+if(questionNum<3)return "Student";
+
+if(questionNum<6)return "Amateur";
+
+if(questionNum<9)return "Dragon Master";
+
+return "Ultimate Dragon Master";
 
 }
 
 
 </script>
 
-
 </body>
-
 </html>
