@@ -1,226 +1,338 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firestreaks | Dragon Master Quiz</title>
-    <style>
-        :root {
-            --fire-orange: #ff4500;
-            --fire-yellow: #ffae00;
-            --dark-char: #1a1a1a;
-        }
+<title>🐉 Mad Fire Ultimate 3D</title>
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', Courier, monospace;
-            background-color: var(--dark-char);
-            color: white;
-            overflow-x: hidden;
-        }
+<style>
 
-        /* Blocky Fire Background Effect */
-        .fire-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(0deg, #600 0%, #000 100%);
-            z-index: -1;
-        }
+body{
+margin:0;
+overflow:hidden;
+font-family:Arial;
+background:black;
+color:white;
+}
 
-        .fire-pixel {
-            position: absolute;
-            bottom: -20px;
-            width: 40px;
-            height: 40px;
-            background: var(--fire-orange);
-            opacity: 0.6;
-            animation: rise 3s infinite linear;
-            box-shadow: 0 0 10px var(--fire-yellow);
-        }
+#start{
+position:absolute;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%);
+background:black;
+padding:20px;
+border:2px solid orange;
+}
 
-        @keyframes rise {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
-        }
+#ui{
+position:absolute;
+top:10px;
+left:10px;
+background:rgba(0,0,0,0.7);
+padding:15px;
+display:none;
+}
 
-        /* UI Containers */
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
+button{
+padding:8px;
+margin:5px;
+background:orange;
+border:none;
+color:white;
+}
 
-        .card {
-            background: rgba(0, 0, 0, 0.85);
-            border: 4px solid var(--fire-orange);
-            padding: 30px;
-            border-radius: 0; /* Blocky feel */
-            max-width: 500px;
-            width: 100%;
-        }
+#healthbar{
+width:200px;
+height:20px;
+background:red;
+}
 
-        h1 { font-size: 3rem; color: var(--fire-yellow); text-shadow: 3px 3px #000; margin-bottom: 10px; }
-        
-        input, select, button {
-            padding: 15px;
-            margin: 10px;
-            font-size: 1.1rem;
-            border: 2px solid var(--fire-orange);
-            background: #222;
-            color: white;
-            width: 80%;
-        }
+#health{
+height:100%;
+width:100%;
+background:lime;
+}
 
-        button {
-            background: var(--fire-orange);
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+</style>
 
-        button:hover { background: var(--fire-yellow); color: black; }
-
-        .hidden { display: none; }
-        .master-rank { color: var(--fire-yellow); font-weight: bold; font-size: 1.5rem; }
-    </style>
 </head>
+
 <body>
 
-    <div class="fire-bg" id="fireContainer"></div>
 
-    <div id="welcome-screen" class="container">
-        <div class="card">
-            <h1>FIRESTREAKS</h1>
-            <p>Enter your name, Brave Traveler:</p>
-            <input type="text" id="playerName" placeholder="Name...">
-            <br>
-            <p>Choose your Class/Standard:</p>
-            <select id="standardSelect">
-                <option value="1">Standard 1 (Youngling)</option>
-                <option value="2">Standard 2 (Apprentice)</option>
-            </select>
-            <br>
-            <button onclick="enterFireWorld()">ENTER FIRE WORLD</button>
-        </div>
-    </div>
+<div id="start">
 
-    <div id="quiz-screen" class="container hidden">
-        <div class="card">
-            <h2 id="question-title">Question 1/10</h2>
-            <p id="rank-display" class="master-rank">Rank: Egg</p>
-            <hr border="1" color="#ff4500">
-            <p id="question-text" style="font-size: 1.3rem;"></p>
-            <div id="options-container"></div>
-        </div>
-    </div>
+<h1>🔥 MAD FIRE ULTIMATE 3D</h1>
 
-    <div id="win-screen" class="container hidden">
-        <div class="card">
-            <h1>VICTORY!</h1>
-            <p id="final-message"></p>
-            <h2 class="master-rank">ULTIMATE DRAGON MASTER</h2>
-            <button onclick="location.reload()">PLAY AGAIN</button>
-        </div>
-    </div>
+<input id="username" placeholder="Username">
 
-    <script>
-        // 1. Generate Blocky Background
-        const fireContainer = document.getElementById('fireContainer');
-        for (let i = 0; i < 30; i++) {
-            let pixel = document.createElement('div');
-            pixel.className = 'fire-pixel';
-            pixel.style.left = Math.random() * 100 + '%';
-            pixel.style.animationDelay = Math.random() * 3 + 's';
-            pixel.style.width = pixel.style.height = (Math.random() * 30 + 20) + 'px';
-            fireContainer.appendChild(pixel);
-        }
+<button onclick="startGame()">START</button>
 
-        // 2. Game Logic
-        let currentQuestion = 0;
-        let score = 0;
-        let playerName = "";
-        let playerStandard = 1;
+</div>
 
-        const ranks = ["Egg", "Hatchling", "Ember Drake", "Flame Glider", "Fire Breather", "Lava Flyer", "Magma Wing", "Inferno Scaler", "Dragon Knight", "Dragon Master"];
 
-        const questions = {
-            1: [
-                { q: "Math: What is 5 + 3?", a: ["7", "8", "10"], c: 1 },
-                { q: "Science: What do bees make?", a: ["Milk", "Honey", "Juice"], c: 1 },
-                { q: "Geo: Which is a hot place?", a: ["Arctic", "Desert", "Fridge"], c: 1 },
-                { q: "Hist: Who lived in castles?", a: ["Knights", "Astronauts", "Robots"], c: 0 },
-                { q: "Math: What is 10 - 4?", a: ["5", "6", "7"], c: 1 },
-                { q: "Science: What do plants need to grow?", a: ["Soda", "Sunlight", "Pizza"], c: 1 },
-                { q: "Geo: What is the blue part of a globe?", a: ["Land", "Water", "Forest"], c: 1 },
-                { q: "Hist: What did cavemen use for tools?", a: ["Metal", "Stone", "Plastic"], c: 1 },
-                { q: "Math: 2 + 2 + 2 = ?", a: ["4", "6", "8"], c: 1 },
-                { q: "Science: Which animal can fly?", a: ["Dog", "Bird", "Cat"], c: 1 }
-            ],
-            2: [
-                { q: "Math: 12 x 2 = ?", a: ["20", "24", "26"], c: 1 },
-                { q: "Science: What gas do humans breathe in?", a: ["Oxygen", "Carbon", "Nitrogen"], c: 0 },
-                { q: "Geo: What is the largest ocean?", a: ["Atlantic", "Pacific", "Indian"], c: 1 },
-                { q: "Hist: Who was the first man on the moon?", a: ["Neil Armstrong", "Elon Musk", "Columbus"], c: 0 },
-                { q: "Math: Half of 50 is?", a: ["20", "25", "30"], c: 1 },
-                { q: "Science: Water boils at how many degrees C?", a: ["50", "100", "200"], c: 1 },
-                { q: "Geo: Which country has the Taj Mahal?", a: ["China", "USA", "India"], c: 2 },
-                { q: "Hist: Ancient pyramids are found in?", a: ["Egypt", "Italy", "Mexico"], c: 0 },
-                { q: "Math: 100 - 45 = ?", a: ["55", "65", "45"], c: 0 },
-                { q: "Science: Which planet is the Red Planet?", a: ["Venus", "Mars", "Jupiter"], c: 1 }
-            ]
-        };
+<div id="ui">
 
-        function enterFireWorld() {
-            playerName = document.getElementById('playerName').value || "Brave One";
-            playerStandard = document.getElementById('standardSelect').value;
-            document.getElementById('welcome-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            showQuestion();
-        }
+<h3 id="player"></h3>
 
-        function showQuestion() {
-            const qData = questions[playerStandard][currentQuestion];
-            document.getElementById('question-title').innerText = `Question ${currentQuestion + 1}/10`;
-            document.getElementById('question-text').innerText = qData.q;
-            document.getElementById('rank-display').innerText = `Rank: ${ranks[currentQuestion] || "Dragon Master"}`;
-            
-            const optionsDiv = document.getElementById('options-container');
-            optionsDiv.innerHTML = "";
-            qData.a.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(index);
-                optionsDiv.appendChild(btn);
-            });
-        }
+Level: <span id="level">1</span><br>
 
-        function checkAnswer(choice) {
-            if (choice === questions[playerStandard][currentQuestion].c) {
-                currentQuestion++;
-                if (currentQuestion < 10) {
-                    showQuestion();
-                } else {
-                    winGame();
-                }
-            } else {
-                alert("The flames were too hot! Try again!");
-                location.reload();
-            }
-        }
+XP: <span id="xp">0</span>
 
-        function winGame() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('win-screen').classList.remove('hidden');
-            document.getElementById('final-message').innerText = `Congratulations ${playerName}! You conquered the Fire World.`;
-        }
-    </script>
+<h4>Health</h4>
+
+<div id="healthbar">
+
+<div id="health"></div>
+
+</div>
+
+
+<h3 id="question"></h3>
+
+<div id="answers"></div>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+
+<script>
+
+
+// PLAYER
+
+let username="";
+let level=1;
+let xp=0;
+let health=100;
+
+
+// 3D WORLD
+
+let scene=new THREE.Scene();
+
+let camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+
+let renderer=new THREE.WebGLRenderer();
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+
+// FLOOR
+
+let floor=new THREE.Mesh(
+
+new THREE.PlaneGeometry(100,100),
+
+new THREE.MeshBasicMaterial({color:0xff4400,side:2})
+
+);
+
+floor.rotation.x=-Math.PI/2;
+
+scene.add(floor);
+
+
+// DRAGON
+
+let dragon=new THREE.Mesh(
+
+new THREE.BoxGeometry(3,2,5),
+
+new THREE.MeshBasicMaterial({color:0xff0000})
+
+);
+
+dragon.position.y=5;
+
+scene.add(dragon);
+
+
+// FIREBALL
+
+let fire=new THREE.Mesh(
+
+new THREE.SphereGeometry(0.5),
+
+new THREE.MeshBasicMaterial({color:0xffaa00})
+
+);
+
+scene.add(fire);
+
+fire.visible=false;
+
+
+
+camera.position.z=15;
+
+
+
+// ANIMATION
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+
+// flying dragon
+
+dragon.position.x=Math.sin(Date.now()*0.002)*5;
+
+
+// fire attack
+
+if(fire.visible){
+
+fire.position.z+=0.5;
+
+if(fire.position.z>10){
+
+fire.visible=false;
+
+}
+
+}
+
+
+renderer.render(scene,camera);
+
+}
+
+animate();
+
+
+
+
+// QUESTIONS
+
+let questions=[
+
+{q:"Sun is a?",a:["Star","Planet","Moon","Rock"],c:0},
+
+{q:"5×8?",a:["40","30","35","45"],c:0},
+
+{q:"Earth shape?",a:["Sphere","Flat","Cube","Triangle"],c:0},
+
+{q:"India capital?",a:["New Delhi","Kerala","Goa","Mumbai"],c:0}
+
+];
+
+
+while(questions.length<200){
+
+questions.push(questions[Math.floor(Math.random()*4)]);
+
+}
+
+
+
+// START
+
+function startGame(){
+
+username=document.getElementById("username").value;
+
+document.getElementById("start").style.display="none";
+
+document.getElementById("ui").style.display="block";
+
+document.getElementById("player").innerHTML=username;
+
+loadQuestion();
+
+}
+
+
+
+// LOAD QUESTION
+
+function loadQuestion(){
+
+let q=questions[level-1];
+
+document.getElementById("question").innerHTML=q.q;
+
+
+let html="";
+
+q.a.forEach((a,i)=>{
+
+html+=`<button onclick="answer(${i})">${a}</button>`;
+
+});
+
+
+document.getElementById("answers").innerHTML=html;
+
+updateUI();
+
+}
+
+
+
+// ANSWER
+
+function answer(i){
+
+let q=questions[level-1];
+
+if(i==q.c){
+
+xp+=10;
+level++;
+
+dragon.scale.x+=0.1;
+
+}else{
+
+
+// DRAGON ATTACK
+
+health-=20;
+
+fire.visible=true;
+
+fire.position.set(dragon.position.x,dragon.position.y,0);
+
+
+if(health<=0){
+
+alert("Game Over");
+
+location.reload();
+
+}
+
+}
+
+
+loadQuestion();
+
+}
+
+
+
+// UPDATE
+
+function updateUI(){
+
+document.getElementById("level").innerHTML=level;
+
+document.getElementById("xp").innerHTML=xp;
+
+document.getElementById("health").style.width=health+"%";
+
+}
+
+
+</script>
+
+
 </body>
+
 </html>
