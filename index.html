@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>🔥 Mad Fire Quiz</title>
+<title>🔥 Mad Fire Quiz Ultimate</title>
 
 <style>
 
@@ -11,55 +11,64 @@ font-family:Arial;
 color:white;
 text-align:center;
 overflow:hidden;
+background:black;
 }
 
-/* BLOCK FIRE */
+/* BLOCKY FIRE */
 
-body::before{
-content:"";
+#fire{
 position:fixed;
-width:200%;
-height:200%;
-background:repeating-linear-gradient(
-0deg,
-#ff6600 0px,
-#ff6600 40px,
-#ff0000 40px,
-#ff0000 80px,
-#ffaa00 80px,
-#ffaa00 120px
-);
-animation:fire 8s linear infinite;
+width:100%;
+height:100%;
 z-index:-1;
+background-size:60px 60px;
+animation:fireMove 2s linear infinite;
 }
 
-.mediumFire::before{
-animation:fire 5s linear infinite;
+@keyframes fireMove{
+0%{background-position:0 0;}
+100%{background-position:0 -60px;}
 }
 
-.hardFire::before{
-animation:fire 3s linear infinite;
+.smallFire{
+background-image:
+linear-gradient(#ff6600 50%, transparent 50%),
+linear-gradient(90deg,#ff0000 50%, transparent 50%);
 }
 
-@keyframes fire{
-0%{transform:translateY(0)}
-100%{transform:translateY(-120px)}
+.mediumFire{
+background-image:
+linear-gradient(#ff3300 50%, transparent 50%),
+linear-gradient(90deg,#ff6600 50%, transparent 50%);
+background-size:40px 40px;
 }
+
+.bigFire{
+background-image:
+linear-gradient(#ff0000 50%, transparent 50%),
+linear-gradient(90deg,#ffaa00 50%, transparent 50%);
+background-size:25px 25px;
+}
+
+
+/* BOX */
 
 .box{
 background:rgba(0,0,0,0.7);
 padding:20px;
-margin:40px auto;
-width:400px;
+margin-top:100px;
+display:inline-block;
+border-radius:10px;
 }
 
 button{
 padding:10px;
-margin:10px;
-font-size:18px;
+margin:5px;
+font-size:16px;
 background:orange;
 border:none;
 color:white;
+cursor:pointer;
 }
 
 </style>
@@ -67,40 +76,39 @@ color:white;
 
 <body>
 
+<div id="fire" class="smallFire"></div>
+
 
 <div id="start" class="box">
 
-<h1>🔥 MAD FIRE</h1>
+<h1>🔥 MAD FIRE QUIZ</h1>
 
 <input id="username" placeholder="Username">
 
 <br><br>
 
-<button onclick="saveUser()">START</button>
+<button onclick="start()">START</button>
 
 </div>
 
 
-<div id="mode" class="box" style="display:none">
+<div id="menu" class="box" style="display:none">
 
 <h2>Select Level</h2>
 
-<button onclick="startGame('easy')">Easy (Class 1)</button>
+<button onclick="play('easy')">Easy</button>
 
-<button id="mediumBtn" onclick="startGame('medium')" disabled>
-Medium (Class 6) 🔒</button>
+<button id="mediumBtn" onclick="play('medium')" disabled>Medium 🔒</button>
 
-<button id="hardBtn" onclick="startGame('hard')" disabled>
-Hard (Class 11–12) 🔒</button>
+<button id="hardBtn" onclick="play('hard')" disabled>Hard 🔒</button>
 
 </div>
+
 
 
 <div id="game" class="box" style="display:none">
 
-<h2 id="player"></h2>
-
-<h3 id="rank"></h3>
+<h2 id="title"></h2>
 
 <h3 id="question"></h3>
 
@@ -114,230 +122,234 @@ Hard (Class 11–12) 🔒</button>
 
 
 let username="";
+
 let difficulty="";
-let questionNum=0;
-let wrong=false;
 
-let mediumUnlocked=false;
-let hardUnlocked=false;
+let questionIndex=0;
 
 
+let unlockMedium=false;
+let unlockHard=false;
 
-// CLASS 1
+
+let titles=[
+
+"Student 🔥",
+
+"Amateur 🔥🔥",
+
+"Dragon Master 🔥🔥🔥",
+
+"Ultimate Dragon Master 🔥🔥🔥🔥"
+
+];
+
+
+
+/* QUESTIONS */
 
 let easy=[
 
-{q:"2+2?",a:["4","3","5","6"],c:0},
-{q:"5-3?",a:["2","1","3","4"],c:0},
-{q:"A for?",a:["Apple","Ball","Cat","Dog"],c:0},
-{q:"10+0?",a:["10","9","11","8"],c:0},
-{q:"Sun is hot?",a:["Yes","No","Cold","Ice"],c:0},
-{q:"1+1?",a:["2","3","1","0"],c:0},
-{q:"Colour of sky?",a:["Blue","Red","Green","Black"],c:0},
-{q:"3+1?",a:["4","5","3","2"],c:0},
-{q:"Bird can?",a:["Fly","Swim","Drive","Cook"],c:0},
-{q:"We drink?",a:["Water","Sand","Fire","Stone"],c:0}
+{q:"2+2?",a:["4","5","6"],c:0},
+
+{q:"Sun is?",a:["Star","Rock","Water"],c:0},
+
+{q:"5+5?",a:["10","11","12"],c:0},
+
+{q:"Color of sky?",a:["Blue","Red","Green"],c:0},
+
+{q:"3+1?",a:["4","3","5"],c:0},
+
+{q:"Earth is?",a:["Planet","Star","Moon"],c:0},
+
+{q:"10-5?",a:["5","6","4"],c:0},
+
+{q:"Water freezes?",a:["Yes","No","Fire"],c:0},
+
+{q:"1+1?",a:["2","3","1"],c:0},
+
+{q:"Moon seen at?",a:["Night","Day","Never"],c:0}
 
 ];
 
-
-// CLASS 6
 
 let medium=[
 
-{q:"12×2?",a:["24","22","26","20"],c:0},
-{q:"15+10?",a:["25","20","30","35"],c:0},
-{q:"Earth shape?",a:["Sphere","Flat","Cube","Line"],c:0},
-{q:"100÷10?",a:["10","5","20","15"],c:0},
-{q:"Prime number?",a:["7","8","9","10"],c:0},
-{q:"Largest planet?",a:["Jupiter","Earth","Mars","Moon"],c:0},
-{q:"50-25?",a:["25","20","30","35"],c:0},
-{q:"Water freezes at?",a:["0°C","10°C","50°C","100°C"],c:0},
-{q:"Square of 5?",a:["25","20","30","35"],c:0},
-{q:"Perimeter means?",a:["Boundary","Area","Volume","Mass"],c:0}
+{q:"12×12?",a:["144","124","134"],c:0},
+
+{q:"Capital of Kerala?",a:["Thiruvananthapuram","Kochi","Kozhikode"],c:0},
+
+{q:"100÷4?",a:["25","20","30"],c:0},
+
+{q:"Largest planet?",a:["Jupiter","Mars","Earth"],c:0},
+
+{q:"Square root 64?",a:["8","7","9"],c:0}
 
 ];
 
-
-// CLASS 11–12
 
 let hard=[
 
-{q:"Derivative of x²?",a:["2x","x","1","x²"],c:0},
-{q:"Value of sin90?",a:["1","0","-1","2"],c:0},
-{q:"Speed of light?",a:["3×10⁸","10⁸","10⁶","10⁵"],c:0},
-{q:"Integral of 1/x?",a:["ln x","x","1","x²"],c:0},
-{q:"g value?",a:["9.8","10","8","12"],c:0},
-{q:"log10 100?",a:["2","1","10","0"],c:0},
-{q:"Carbon atomic number?",a:["6","12","14","16"],c:0},
-{q:"Force formula?",a:["ma","mv","mm","mc"],c:0},
-{q:"cos0?",a:["1","0","-1","2"],c:0},
-{q:"π value?",a:["3.14","3","4","2"],c:0}
+{q:"Derivative of x²?",a:["2x","x","x²"],c:0},
+
+{q:"Speed of light?",a:["3×10⁸","5×10⁸","1×10⁸"],c:0},
+
+{q:"Integral of 1 dx?",a:["x","1","0"],c:0},
+
+{q:"H2O is?",a:["Water","Oxygen","Hydrogen"],c:0},
+
+{q:"Pi value?",a:["3.14","2.14","4.14"],c:0}
 
 ];
 
 
 
+function start(){
 
-// START
+username=document.getElementById("username").value;
 
-function saveUser(){
+document.getElementById("start").style.display="none";
 
-username=usernameInput.value;
-
-start.style.display="none";
-
-mode.style.display="block";
+document.getElementById("menu").style.display="block";
 
 }
 
 
 
-// START GAME
+function play(level){
 
-function startGame(type){
+difficulty=level;
 
-difficulty=type;
+questionIndex=0;
 
-mode.style.display="none";
+document.getElementById("menu").style.display="none";
 
-game.style.display="block";
-
-player.innerHTML=username;
-
-questionNum=0;
-wrong=false;
+document.getElementById("game").style.display="block";
 
 
-document.body.classList.remove("mediumFire","hardFire");
+if(level=="easy")
 
-if(type=="medium")document.body.classList.add("mediumFire");
+fire.className="smallFire";
 
-if(type=="hard")document.body.classList.add("hardFire");
+if(level=="medium")
+
+fire.className="mediumFire";
+
+if(level=="hard")
+
+fire.className="bigFire";
 
 
-loadQuestion();
-
-}
-
-
-
-// LOAD
-
-function loadQuestion(){
-
-let set=getSet();
-
-if(questionNum>=10){
-
-win();
-
-return;
+load();
 
 }
 
-rank.innerHTML=getRank();
 
-question.innerHTML=set[questionNum].q;
 
-answers.innerHTML="";
+function load(){
 
-set[questionNum].a.forEach((a,i)=>{
+let list=getList();
 
-answers.innerHTML+=
-`<button onclick="answer(${i})">${a}</button>`;
+let q=list[questionIndex];
+
+document.getElementById("title").innerHTML=
+
+username+" - "+titles[Math.floor(questionIndex/3)];
+
+document.getElementById("question").innerHTML=q.q;
+
+
+let html="";
+
+q.a.forEach((a,i)=>{
+
+html+=`<button onclick="answer(${i})">${a}</button>`;
 
 });
 
+document.getElementById("answers").innerHTML=html;
+
 }
 
 
-
-// ANSWER
 
 function answer(i){
 
-let set=getSet();
+let list=getList();
 
-if(i!=set[questionNum].c){
+if(i==list[questionIndex].c){
 
-wrong=true;
+questionIndex++;
 
-alert("Wrong!");
+if(questionIndex>=list.length){
+
+win();
+
+}else{
+
+load();
 
 }
 
-questionNum++;
+}else{
 
-loadQuestion();
+alert("Wrong! Restart");
+
+location.reload();
+
+}
 
 }
 
 
-
-// WIN
 
 function win(){
 
-if(difficulty=="easy" && !wrong){
+alert("YOU WIN 🔥");
 
-mediumUnlocked=true;
+
+if(difficulty=="easy"){
+
+unlockMedium=true;
+
 mediumBtn.disabled=false;
 
-alert("Medium Unlocked 🔥");
+mediumBtn.innerHTML="Medium";
 
 }
 
-else if(difficulty=="medium" && !wrong){
+if(difficulty=="medium"){
 
-hardUnlocked=true;
+unlockHard=true;
+
 hardBtn.disabled=false;
 
-alert("Hard Unlocked 🔥");
+hardBtn.innerHTML="Hard";
 
 }
 
-else if(difficulty=="hard" && !wrong){
 
-alert("YOU ARE ULTIMATE DRAGON MASTER 🐉🔥");
+document.getElementById("game").style.display="none";
 
-}
-
-game.style.display="none";
-
-mode.style.display="block";
+document.getElementById("menu").style.display="block";
 
 }
 
 
 
-// HELPERS
-
-function getSet(){
+function getList(){
 
 if(difficulty=="easy")return easy;
 
 if(difficulty=="medium")return medium;
 
-return hard;
-
-}
-
-
-function getRank(){
-
-if(questionNum<3)return "Student";
-
-if(questionNum<6)return "Amateur";
-
-if(questionNum<9)return "Dragon Master";
-
-return "Ultimate Dragon Master";
+if(difficulty=="hard")return hard;
 
 }
 
 
 </script>
+
 
 </body>
 </html>
