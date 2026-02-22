@@ -1,114 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>🔥 Mad Fire Quiz Ultimate</title>
+<title>Mad Fire Pixel</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial;
-color:white;
+background:black;
+color:#ffcc66;
+font-family:"Courier New",monospace;
 text-align:center;
 overflow:hidden;
-background:black;
 }
 
-/* BLOCKY FIRE */
+/* PIXEL FIRE CANVAS */
 
 #fire{
 position:fixed;
-width:100%;
-height:100%;
+top:0;
+left:0;
 z-index:-1;
-background-size:60px 60px;
-animation:fireMove 2s linear infinite;
+image-rendering:pixelated;
 }
 
-@keyframes fireMove{
-0%{background-position:0 0;}
-100%{background-position:0 -60px;}
-}
-
-.smallFire{
-background-image:
-linear-gradient(#ff6600 50%, transparent 50%),
-linear-gradient(90deg,#ff0000 50%, transparent 50%);
-}
-
-.mediumFire{
-background-image:
-linear-gradient(#ff3300 50%, transparent 50%),
-linear-gradient(90deg,#ff6600 50%, transparent 50%);
-background-size:40px 40px;
-}
-
-.bigFire{
-background-image:
-linear-gradient(#ff0000 50%, transparent 50%),
-linear-gradient(90deg,#ffaa00 50%, transparent 50%);
-background-size:25px 25px;
-}
-
-
-/* BOX */
+/* PIXEL BOX */
 
 .box{
-background:rgba(0,0,0,0.7);
-padding:20px;
-margin-top:100px;
+
+margin-top:80px;
+
+background:#1a0f00;
+
+border:4px solid #ff6600;
+
+box-shadow:0 0 20px #ff3300;
+
 display:inline-block;
-border-radius:10px;
+
+padding:20px;
+
 }
 
+/* PIXEL BUTTON */
+
 button{
+
+background:#331a00;
+
+border:3px solid #ff6600;
+
+color:#ffcc66;
+
 padding:10px;
-margin:5px;
-font-size:16px;
-background:orange;
-border:none;
-color:white;
+
+margin:6px;
+
+font-family:inherit;
+
 cursor:pointer;
+
+}
+
+button:hover{
+
+background:#ff6600;
+color:black;
+
+}
+
+/* INPUT */
+
+input{
+
+background:black;
+
+border:3px solid #ff6600;
+
+color:#ffcc66;
+
+padding:10px;
+
+font-family:inherit;
+
+}
+
+h1{
+
+text-shadow:0 0 10px #ff3300;
+
 }
 
 </style>
 </head>
-
 <body>
 
-<div id="fire" class="smallFire"></div>
+
+<canvas id="fire"></canvas>
 
 
 <div id="start" class="box">
 
-<h1>🔥 MAD FIRE QUIZ</h1>
+<h1>MAD FIRE</h1>
 
-<input id="username" placeholder="Username">
+<input id="name" placeholder="USERNAME">
 
 <br><br>
 
-<button onclick="start()">START</button>
+<button onclick="startGame()">START</button>
 
 </div>
-
-
-<div id="menu" class="box" style="display:none">
-
-<h2>Select Level</h2>
-
-<button onclick="play('easy')">Easy</button>
-
-<button id="mediumBtn" onclick="play('medium')" disabled>Medium 🔒</button>
-
-<button id="hardBtn" onclick="play('hard')" disabled>Hard 🔒</button>
-
-</div>
-
 
 
 <div id="game" class="box" style="display:none">
 
-<h2 id="title"></h2>
+<h2 id="rank"></h2>
 
 <h3 id="question"></h3>
 
@@ -120,230 +126,165 @@ cursor:pointer;
 
 <script>
 
+/* PIXEL FIRE */
+
+let canvas=document.getElementById("fire");
+
+let ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let w=120;
+let h=80;
+
+let fire=[];
+
+for(let i=0;i<w*h;i++) fire[i]=0;
+
+function updateFire(){
+
+for(let x=0;x<w;x++){
+
+fire[(h-1)*w+x]=Math.random()*255;
+
+}
+
+for(let i=0;i<w*(h-1);i++){
+
+let decay=Math.random()*3;
+
+let below=i+w;
+
+fire[i]=Math.max(0,fire[below]-decay);
+
+}
+
+}
+
+function drawFire(){
+
+let sx=canvas.width/w;
+let sy=canvas.height/h;
+
+for(let y=0;y<h;y++){
+
+for(let x=0;x<w;x++){
+
+let val=fire[y*w+x];
+
+ctx.fillStyle="rgb("+val+","+(val/3)+",0)";
+
+ctx.fillRect(x*sx,y*sy,sx,sy);
+
+}
+
+}
+
+}
+
+function loop(){
+
+updateFire();
+
+drawFire();
+
+requestAnimationFrame(loop);
+
+}
+
+loop();
+
+
+/* GAME */
 
 let username="";
+let qIndex=0;
 
-let difficulty="";
+let ranks=[
 
-let questionIndex=0;
+"STUDENT",
 
+"AMATEUR",
 
-let unlockMedium=false;
-let unlockHard=false;
+"DRAGON MASTER",
 
-
-let titles=[
-
-"Student 🔥",
-
-"Amateur 🔥🔥",
-
-"Dragon Master 🔥🔥🔥",
-
-"Ultimate Dragon Master 🔥🔥🔥🔥"
+"ULTIMATE DRAGON MASTER"
 
 ];
 
-
-
-/* QUESTIONS */
-
-let easy=[
+let questions=[
 
 {q:"2+2?",a:["4","5","6"],c:0},
 
-{q:"Sun is?",a:["Star","Rock","Water"],c:0},
+{q:"5×5?",a:["25","30","20"],c:0},
 
-{q:"5+5?",a:["10","11","12"],c:0},
+{q:"Planet we live on?",a:["Earth","Mars","Moon"],c:0},
 
-{q:"Color of sky?",a:["Blue","Red","Green"],c:0},
-
-{q:"3+1?",a:["4","3","5"],c:0},
-
-{q:"Earth is?",a:["Planet","Star","Moon"],c:0},
-
-{q:"10-5?",a:["5","6","4"],c:0},
-
-{q:"Water freezes?",a:["Yes","No","Fire"],c:0},
-
-{q:"1+1?",a:["2","3","1"],c:0},
-
-{q:"Moon seen at?",a:["Night","Day","Never"],c:0}
+{q:"10+10?",a:["20","30","10"],c:0}
 
 ];
 
 
-let medium=[
+function startGame(){
 
-{q:"12×12?",a:["144","124","134"],c:0},
+username=name.value;
 
-{q:"Capital of Kerala?",a:["Thiruvananthapuram","Kochi","Kozhikode"],c:0},
+start.style.display="none";
 
-{q:"100÷4?",a:["25","20","30"],c:0},
+game.style.display="block";
 
-{q:"Largest planet?",a:["Jupiter","Mars","Earth"],c:0},
-
-{q:"Square root 64?",a:["8","7","9"],c:0}
-
-];
-
-
-let hard=[
-
-{q:"Derivative of x²?",a:["2x","x","x²"],c:0},
-
-{q:"Speed of light?",a:["3×10⁸","5×10⁸","1×10⁸"],c:0},
-
-{q:"Integral of 1 dx?",a:["x","1","0"],c:0},
-
-{q:"H2O is?",a:["Water","Oxygen","Hydrogen"],c:0},
-
-{q:"Pi value?",a:["3.14","2.14","4.14"],c:0}
-
-];
-
-
-
-function start(){
-
-username=document.getElementById("username").value;
-
-document.getElementById("start").style.display="none";
-
-document.getElementById("menu").style.display="block";
+loadQ();
 
 }
 
 
+function loadQ(){
 
-function play(level){
+let q=questions[qIndex];
 
-difficulty=level;
+rank.innerHTML=username+" : "+ranks[Math.floor(qIndex)];
 
-questionIndex=0;
+question.innerHTML=q.q;
 
-document.getElementById("menu").style.display="none";
-
-document.getElementById("game").style.display="block";
-
-
-if(level=="easy")
-
-fire.className="smallFire";
-
-if(level=="medium")
-
-fire.className="mediumFire";
-
-if(level=="hard")
-
-fire.className="bigFire";
-
-
-load();
-
-}
-
-
-
-function load(){
-
-let list=getList();
-
-let q=list[questionIndex];
-
-document.getElementById("title").innerHTML=
-
-username+" - "+titles[Math.floor(questionIndex/3)];
-
-document.getElementById("question").innerHTML=q.q;
-
-
-let html="";
+answers.innerHTML="";
 
 q.a.forEach((a,i)=>{
 
-html+=`<button onclick="answer(${i})">${a}</button>`;
+answers.innerHTML+=
+
+`<button onclick="answer(${i})">${a}</button>`;
 
 });
 
-document.getElementById("answers").innerHTML=html;
-
 }
-
 
 
 function answer(i){
 
-let list=getList();
+if(i==questions[qIndex].c){
 
-if(i==list[questionIndex].c){
+qIndex++;
 
-questionIndex++;
+if(qIndex>=questions.length){
 
-if(questionIndex>=list.length){
-
-win();
-
-}else{
-
-load();
-
-}
-
-}else{
-
-alert("Wrong! Restart");
+alert("YOU BECAME ULTIMATE DRAGON MASTER");
 
 location.reload();
 
 }
 
-}
-
-
-
-function win(){
-
-alert("YOU WIN 🔥");
-
-
-if(difficulty=="easy"){
-
-unlockMedium=true;
-
-mediumBtn.disabled=false;
-
-mediumBtn.innerHTML="Medium";
+else loadQ();
 
 }
 
-if(difficulty=="medium"){
+else{
 
-unlockHard=true;
+alert("WRONG");
 
-hardBtn.disabled=false;
-
-hardBtn.innerHTML="Hard";
+location.reload();
 
 }
-
-
-document.getElementById("game").style.display="none";
-
-document.getElementById("menu").style.display="block";
-
-}
-
-
-
-function getList(){
-
-if(difficulty=="easy")return easy;
-
-if(difficulty=="medium")return medium;
-
-if(difficulty=="hard")return hard;
 
 }
 
