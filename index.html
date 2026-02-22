@@ -1,296 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Mad Fire Pixel</title>
+    <meta charset="UTF-8">
+    <title>FireStreaks Quiz</title>
+    <style>
+        /* Blocky Fire Background Effect */
+        body {
+            margin: 0;
+            background-color: #200;
+            background-image: 
+                linear-gradient(45deg, #f50 25%, transparent 25%), 
+                linear-gradient(-45deg, #f50 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f20 75%), 
+                linear-gradient(-45deg, transparent 75%, #f20 75%);
+            background-size: 40px 40px;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-<style>
+        #game-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border: 4px solid #ff4500;
+            text-align: center;
+            width: 400px;
+            box-shadow: 0 0 20px #f50;
+        }
 
-body{
-margin:0;
-background:black;
-color:#ffcc66;
-font-family:"Courier New",monospace;
-text-align:center;
-overflow:hidden;
-}
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 1.1em;
+        }
 
-/* PIXEL FIRE CANVAS */
-
-#fire{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
-image-rendering:pixelated;
-}
-
-/* PIXEL BOX */
-
-.box{
-
-margin-top:80px;
-
-background:#1a0f00;
-
-border:4px solid #ff6600;
-
-box-shadow:0 0 20px #ff3300;
-
-display:inline-block;
-
-padding:20px;
-
-}
-
-/* PIXEL BUTTON */
-
-button{
-
-background:#331a00;
-
-border:3px solid #ff6600;
-
-color:#ffcc66;
-
-padding:10px;
-
-margin:6px;
-
-font-family:inherit;
-
-cursor:pointer;
-
-}
-
-button:hover{
-
-background:#ff6600;
-color:black;
-
-}
-
-/* INPUT */
-
-input{
-
-background:black;
-
-border:3px solid #ff6600;
-
-color:#ffcc66;
-
-padding:10px;
-
-font-family:inherit;
-
-}
-
-h1{
-
-text-shadow:0 0 10px #ff3300;
-
-}
-
-</style>
+        .locked { opacity: 0.5; cursor: not-allowed; }
+        .hidden { display: none; }
+        h1 { color: #ffae00; text-shadow: 2px 2px #ff4500; }
+    </style>
 </head>
 <body>
 
+<div id="game-container">
+    <h1>FIRESTREAKS</h1>
+    
+    <div id="setup">
+        <input type="text" id="username" placeholder="Enter Your Name">
+        <br>
+        <button onclick="startGame('easy')">EASY (1st Std)</button>
+        <button id="hard-btn" class="locked" onclick="startGame('hard')" disabled>HARD (6th Std)</button>
+        <button id="extreme-btn" class="locked" onclick="startGame('extreme')" disabled>EXTREME (10th Std)</button>
+    </div>
 
-<canvas id="fire"></canvas>
-
-
-<div id="start" class="box">
-
-<h1>MAD FIRE</h1>
-
-<input id="name" placeholder="USERNAME">
-
-<br><br>
-
-<button onclick="startGame()">START</button>
-
+    <div id="quiz" class="hidden">
+        <p id="welcome-msg"></p>
+        <h2 id="question-num">Question 1/20</h2>
+        <p id="question-text"></p>
+        <input type="text" id="answer-input" placeholder="Your Answer">
+        <button onclick="checkAnswer()">Submit</button>
+    </div>
 </div>
-
-
-<div id="game" class="box" style="display:none">
-
-<h2 id="rank"></h2>
-
-<h3 id="question"></h3>
-
-<div id="answers"></div>
-
-</div>
-
-
 
 <script>
-
-/* PIXEL FIRE */
-
-let canvas=document.getElementById("fire");
-
-let ctx=canvas.getContext("2d");
-
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let w=120;
-let h=80;
-
-let fire=[];
-
-for(let i=0;i<w*h;i++) fire[i]=0;
-
-function updateFire(){
-
-for(let x=0;x<w;x++){
-
-fire[(h-1)*w+x]=Math.random()*255;
-
-}
-
-for(let i=0;i<w*(h-1);i++){
-
-let decay=Math.random()*3;
-
-let below=i+w;
-
-fire[i]=Math.max(0,fire[below]-decay);
-
-}
-
-}
-
-function drawFire(){
-
-let sx=canvas.width/w;
-let sy=canvas.height/h;
-
-for(let y=0;y<h;y++){
-
-for(let x=0;x<w;x++){
-
-let val=fire[y*w+x];
-
-ctx.fillStyle="rgb("+val+","+(val/3)+",0)";
-
-ctx.fillRect(x*sx,y*sy,sx,sy);
-
-}
-
-}
-
-}
-
-function loop(){
-
-updateFire();
-
-drawFire();
-
-requestAnimationFrame(loop);
-
-}
-
-loop();
-
-
-/* GAME */
-
-let username="";
-let qIndex=0;
-
-let ranks=[
-
-"STUDENT",
-
-"AMATEUR",
-
-"DRAGON MASTER",
-
-"ULTIMATE DRAGON MASTER"
-
-];
-
-let questions=[
-
-{q:"2+2?",a:["4","5","6"],c:0},
-
-{q:"5×5?",a:["25","30","20"],c:0},
-
-{q:"Planet we live on?",a:["Earth","Mars","Moon"],c:0},
-
-{q:"10+10?",a:["20","30","10"],c:0}
-
-];
-
-
-function startGame(){
-
-username=name.value;
-
-start.style.display="none";
-
-game.style.display="block";
-
-loadQ();
-
-}
-
-
-function loadQ(){
-
-let q=questions[qIndex];
-
-rank.innerHTML=username+" : "+ranks[Math.floor(qIndex)];
-
-question.innerHTML=q.q;
-
-answers.innerHTML="";
-
-q.a.forEach((a,i)=>{
-
-answers.innerHTML+=
-
-`<button onclick="answer(${i})">${a}</button>`;
-
-});
-
-}
-
-
-function answer(i){
-
-if(i==questions[qIndex].c){
-
-qIndex++;
-
-if(qIndex>=questions.length){
-
-alert("YOU BECAME ULTIMATE DRAGON MASTER");
-
-location.reload();
-
-}
-
-else loadQ();
-
-}
-
-else{
-
-alert("WRONG");
-
-location.reload();
-
-}
-
-}
-
-
+    let currentLevel = "";
+    let score = 0;
+    let easyUnlocked = true;
+    let hardUnlocked = false;
+
+    const questions = {
+        easy: { q: "What is 5 + 3?", a: "8" },
+        hard: { q: "What is the square root of 144?", a: "12" },
+        extreme: { q: "Solve for x: 2x + 5 = 15", a: "5" }
+    };
+
+    function startGame(level) {
+        const name = document.getElementById('username').value;
+        if(!name) return alert("Enter your name first!");
+        
+        currentLevel = level;
+        score = 0;
+        document.getElementById('setup').classList.add('hidden');
+        document.getElementById('quiz').classList.remove('hidden');
+        document.getElementById('welcome-msg').innerText = "Player: " + name;
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        document.getElementById('question-num').innerText = `Question ${score + 1}/20`;
+        document.getElementById('question-text').innerText = questions[currentLevel].q;
+        document.getElementById('answer-input').value = "";
+    }
+
+    function checkAnswer() {
+        const userAns = document.getElementById('answer-input').value;
+        if(userAns === questions[currentLevel].a) {
+            score++;
+            if(score === 20) {
+                alert("YOU WIN " + currentLevel.toUpperCase() + "!");
+                if(currentLevel === 'easy') {
+                    document.getElementById('hard-btn').disabled = false;
+                    document.getElementById('hard-btn').classList.remove('locked');
+                }
+                reset();
+            } else {
+                nextQuestion();
+            }
+        } else {
+            alert("Wrong! Try again.");
+        }
+    }
+
+    function reset() {
+        document.getElementById('setup').classList.remove('hidden');
+        document.getElementById('quiz').classList.add('hidden');
+    }
 </script>
-
 
 </body>
 </html>
