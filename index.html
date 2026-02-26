@@ -74,7 +74,6 @@
             font-weight: bold;
         }
 
-        /* The Firestreak Animation */
         .on-fire {
             animation: shake 0.5s infinite;
             border: 4px solid var(--fire-yellow);
@@ -110,81 +109,147 @@
         <button class="btn easy-btn" onclick="location.reload()">TRY AGAIN</button>
     </div>
 
-    <script>
-        const fireQuestions = [
-            { q: "Math: What is 12 multiplied by 5?", options: ["50", "60", "70", "55"], a: "60", level: "Easy" },
-            { q: "Geography: Which continent is the Sahara Desert in?", options: ["Asia", "Africa", "Europe", "South America"], a: "Africa", level: "Easy" },
-            { q: "Science: What do bees collect from flowers?", options: ["Nectar", "Water", "Leaves", "Mud"], a: "Nectar", level: "Easy" },
-            { q: "History: Who was the first person to step on the Moon?", options: ["Neil Armstrong", "Buzz Lightyear", "Elon Musk", "Einstein"], a: "Neil Armstrong", level: "Easy" },
-            { q: "Math: A triangle has how many sides?", options: ["2", "3", "4", "5"], a: "3", level: "Easy" },
-            { q: "Geography: What is the capital of France?", options: ["London", "Berlin", "Paris", "Rome"], a: "Paris", level: "Easy" },
-            { q: "Science: Which planet is the 'Red Planet'?", options: ["Venus", "Mars", "Jupiter", "Saturn"], a: "Mars", level: "Easy" },
-            { q: "History: Who built the Great Pyramids?", options: ["Romans", "Greeks", "Egyptians", "Mayans"], a: "Egyptians", level: "Easy" },
-            { q: "Math: What is half of 100?", options: ["25", "50", "75", "10"], a: "50", level: "Easy" },
-            { q: "Science: What state of matter is ice?", options: ["Liquid", "Gas", "Solid", "Plasma"], a: "Solid", level: "Easy" },
-            { q: "Math: What is the square root of 144?", options: ["10", "11", "12", "14"], a: "12", level: "Hard" },
-            { q: "Geography: Smallest country in the world?", options: ["Monaco", "Malta", "Vatican City", "San Marino"], a: "Vatican City", level: "Hard" },
-            { q: "Science: Chemical symbol for Gold?", options: ["Gd", "Ag", "Fe", "Au"], a: "Au", level: "Hard" },
-            { q: "History: In what year did World War II end?", options: ["1918", "1945", "1950", "1939"], a: "1945", level: "Hard" },
-            { q: "Math: If 3x = 15, what is x?", options: ["3", "5", "10", "45"], a: "5", level: "Hard" },
-            { q: "Geography: Longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], a: "Nile", level: "Hard" },
-            { q: "Science: Most abundant gas in atmosphere?", options: ["Oxygen", "CO2", "Nitrogen", "Hydrogen"], a: "Nitrogen", level: "Hard" },
-            { q: "History: Who painted the Mona Lisa?", options: ["Picasso", "Van Gogh", "Da Vinci", "Michelangelo"], a: "Da Vinci", level: "Hard" },
-            { q: "Math: Degrees in a right angle?", options: ["45", "90", "180", "360"], a: "90", level: "Hard" },
-            { q: "Science: Light travels in a straight line called a...?", options: ["Ray", "Wave", "Loop", "Particle"], a: "Ray", level: "Hard" }
-        ];
+<script>
 
-        let currentQuestions = [];
-        let currentIndex = 0;
-        let streak = 0;
-        let name = "";
+const fireQuestions = [
+{ q: "Math: What is 12 multiplied by 5?", options: ["50", "60", "70", "55"], a: "60", level: "Easy" },
+{ q: "Geography: Which continent is the Sahara Desert in?", options: ["Asia", "Africa", "Europe", "South America"], a: "Africa", level: "Easy" },
+{ q: "Science: What do bees collect from flowers?", options: ["Nectar", "Water", "Leaves", "Mud"], a: "Nectar", level: "Easy" },
+{ q: "History: Who was the first person to step on the Moon?", options: ["Neil Armstrong", "Buzz Lightyear", "Elon Musk", "Einstein"], a: "Neil Armstrong", level: "Easy" },
+{ q: "Math: A triangle has how many sides?", options: ["2", "3", "4", "5"], a: "3", level: "Easy" },
+{ q: "Geography: What is the capital of France?", options: ["London", "Berlin", "Paris", "Rome"], a: "Paris", level: "Easy" },
+{ q: "Science: Which planet is the 'Red Planet'?", options: ["Venus", "Mars", "Jupiter", "Saturn"], a: "Mars", level: "Easy" },
+{ q: "History: Who built the Great Pyramids?", options: ["Romans", "Greeks", "Egyptians", "Mayans"], a: "Egyptians", level: "Easy" },
+{ q: "Math: What is half of 100?", options: ["25", "50", "75", "10"], a: "50", level: "Easy" },
+{ q: "Science: What state of matter is ice?", options: ["Liquid", "Gas", "Solid", "Plasma"], a: "Solid", level: "Easy" },
 
-        function startQuiz(level) {
-            name = document.getElementById('playerName').value;
-            if (!name) return alert("Enter your name!");
+{ q: "Math: What is the square root of 144?", options: ["10", "11", "12", "14"], a: "12", level: "Hard" },
+{ q: "Geography: Smallest country in the world?", options: ["Monaco", "Malta", "Vatican City", "San Marino"], a: "Vatican City", level: "Hard" },
+{ q: "Science: Chemical symbol for Gold?", options: ["Gd", "Ag", "Fe", "Au"], a: "Au", level: "Hard" },
+{ q: "History: In what year did World War II end?", options: ["1918", "1945", "1950", "1939"], a: "1945", level: "Hard" },
+{ q: "Math: If 3x = 15, what is x?", options: ["3", "5", "10", "45"], a: "5", level: "Hard" },
+{ q: "Geography: Longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], a: "Nile", level: "Hard" },
+{ q: "Science: Most abundant gas in atmosphere?", options: ["Oxygen", "CO2", "Nitrogen", "Hydrogen"], a: "Nitrogen", level: "Hard" },
+{ q: "History: Who painted the Mona Lisa?", options: ["Picasso", "Van Gogh", "Da Vinci", "Michelangelo"], a: "Da Vinci", level: "Hard" },
+{ q: "Math: Degrees in a right angle?", options: ["45", "90", "180", "360"], a: "90", level: "Hard" },
+{ q: "Science: Light travels in a straight line called a...?", options: ["Ray", "Wave", "Loop", "Particle"], a: "Ray", level: "Hard" }
+];
 
-            currentQuestions = fireQuestions.filter(q => q.level === level);
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            showQuestion();
-        }
+let currentQuestions = [];
+let currentIndex = 0;
+let streak = 0;
+let name = "";
 
-        function showQuestion() {
-            if (currentIndex >= currentQuestions.length) return endQuiz();
-            
-            const q = currentQuestions[currentIndex];
-            document.getElementById('question-text').innerText = q.q;
-            const container = document.getElementById('options-container');
-            container.innerHTML = "";
+function startQuiz(level){
 
-            q.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "btn option-btn";
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(opt, q.a);
-                container.appendChild(btn);
-            });
-        }
+name=document.getElementById('playerName').value;
 
-        function checkAnswer(val, correct) {
-            const quizBox = document.getElementById('quiz-screen');
-            if (val === correct) {
-                streak++;
-                if (streak >= 3) quizBox.classList.add('on-fire');
-            } else {
-                streak = 0;
-                quizBox.classList.remove('on-fire');
-            }
-            document.getElementById('streak-display').innerText = `Streak: ${streak} 🔥`;
-            currentIndex++;
-            showQuestion();
-        }
+if(!name){
+alert("Enter your name!");
+return;
+}
 
-        function endQuiz() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = `${name}, your final streak was ${streak}!`;
-        }
-    </script>
+currentQuestions=fireQuestions.filter(q=>q.level===level);
+
+document.getElementById('setup-screen').classList.add('hidden');
+document.getElementById('quiz-screen').classList.remove('hidden');
+
+showQuestion();
+}
+
+function showQuestion(){
+
+if(currentIndex>=currentQuestions.length){
+endQuiz();
+return;
+}
+
+const q=currentQuestions[currentIndex];
+
+document.getElementById('question-text').innerText=q.q;
+
+const container=document.getElementById('options-container');
+
+container.innerHTML="";
+
+q.options.forEach(opt=>{
+
+const btn=document.createElement('button');
+
+btn.className="btn option-btn";
+
+btn.innerText=opt;
+
+btn.onclick=()=>checkAnswer(opt,q.a);
+
+container.appendChild(btn);
+
+});
+}
+
+function checkAnswer(val,correct){
+
+const quizBox=document.getElementById('quiz-screen');
+
+if(val===correct){
+
+streak++;
+
+if(streak>=3){
+
+quizBox.classList.add('on-fire');
+
+}
+
+if(streak===10){
+
+winGame();
+
+return;
+
+}
+
+}else{
+
+streak=0;
+
+quizBox.classList.remove('on-fire');
+
+}
+
+document.getElementById('streak-display').innerText=`Streak: ${streak} 🔥`;
+
+currentIndex++;
+
+showQuestion();
+
+}
+
+function winGame(){
+
+document.getElementById('quiz-screen').classList.add('hidden');
+
+document.getElementById('result-screen').classList.remove('hidden');
+
+document.getElementById('final-msg').innerText="🏆 YOU WON FIRESTREAKS!";
+
+document.getElementById('final-score').innerText=
+`${name}, you reached 10 streak! You are a FIRE MASTER 🔥`;
+
+}
+
+function endQuiz(){
+
+document.getElementById('quiz-screen').classList.add('hidden');
+
+document.getElementById('result-screen').classList.remove('hidden');
+
+document.getElementById('final-score').innerText=
+`${name}, your final streak was ${streak}`;
+
+}
+
+</script>
+
 </body>
 </html>
