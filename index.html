@@ -1,117 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firestreaks | Educational Qualifier</title>
-    <style>
-        :root {
-            --fire-orange: #ff4500;
-            --fire-yellow: #ffca28;
-            --dark-bg: #1a1a1a;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firestreaks | Educational Qualifier</title>
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--dark-bg);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
+<style>
+:root {
+--fire-orange: #ff4500;
+--fire-yellow: #ffca28;
+--dark-bg: #1a1a1a;
+}
 
-        .container {
-            background: #2d2d2d;
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid var(--fire-orange);
-            box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
-            text-align: center;
-            width: 400px;
-            position: relative;
-        }
+body {
+font-family: 'Segoe UI', sans-serif;
+background-color: var(--dark-bg);
+color: white;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+margin: 0;
+overflow: hidden;
+}
 
-        h1 { color: var(--fire-yellow); letter-spacing: 3px; margin-top: 0; }
-        
-        input {
-            width: 80%;
-            padding: 12px;
-            margin: 20px 0;
-            border-radius: 8px;
-            border: 1px solid var(--fire-orange);
-            background: #3d3d3d;
-            color: white;
-            font-size: 16px;
-            text-align: center;
-        }
+.container {
+background: #2d2d2d;
+padding: 30px;
+border-radius: 20px;
+border: 2px solid var(--fire-orange);
+box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+text-align: center;
+width: 400px;
+position: relative;
+}
 
-        .btn {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 16px;
-        }
+h1 { color: var(--fire-yellow); letter-spacing: 3px; margin-top: 0; }
 
-        .easy-btn { background: var(--fire-yellow); color: black; }
-        .hard-btn { background: var(--fire-orange); color: white; }
-        .option-btn { background: #444; color: white; margin: 5px 0; }
-        .option-btn:hover { background: #555; }
+input {
+width: 80%;
+padding: 12px;
+margin: 20px 0;
+border-radius: 8px;
+border: 1px solid var(--fire-orange);
+background: #3d3d3d;
+color: white;
+font-size: 16px;
+text-align: center;
+}
 
-        .hidden { display: none; }
-        
-        #streak-display {
-            font-size: 24px;
-            color: var(--fire-yellow);
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+.btn {
+width: 100%;
+padding: 15px;
+margin: 10px 0;
+border: none;
+border-radius: 8px;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+font-size: 16px;
+}
 
-        .on-fire {
-            animation: shake 0.5s infinite;
-            border: 4px solid var(--fire-yellow);
-            box-shadow: 0 0 40px var(--fire-orange);
-        }
+.easy-btn { background: var(--fire-yellow); color: black; }
+.hard-btn { background: var(--fire-orange); color: white; }
+.option-btn { background: #444; color: white; margin: 5px 0; }
+.option-btn:hover { background: #555; }
 
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            50% { transform: translate(-1px, -2px) rotate(-1deg); }
-            100% { transform: translate(1px, 1px) rotate(0deg); }
-        }
-    </style>
+.hidden { display: none; }
+
+#streak-display {
+font-size: 24px;
+color: var(--fire-yellow);
+margin-bottom: 5px;
+font-weight: bold;
+}
+
+#rank-display{
+font-size:18px;
+color:#00e5ff;
+margin-bottom:10px;
+font-weight:bold;
+}
+
+.on-fire {
+animation: shake 0.5s infinite;
+border: 4px solid var(--fire-yellow);
+box-shadow: 0 0 40px var(--fire-orange);
+}
+
+@keyframes shake {
+0% { transform: translate(1px, 1px) rotate(0deg); }
+50% { transform: translate(-1px, -2px) rotate(-1deg); }
+100% { transform: translate(1px, 1px) rotate(0deg); }
+}
+</style>
 </head>
+
 <body>
 
-    <div id="setup-screen" class="container">
-        <h1>FIRESTREAKS</h1>
-        <p>Subject: Science, Math, Geography, History</p>
-        <input type="text" id="playerName" placeholder="Enter Your Name">
-        <button class="btn easy-btn" onclick="startQuiz('Easy')">START EASY MODE</button>
-        <button class="btn hard-btn" onclick="startQuiz('Hard')">START HARD MODE</button>
-    </div>
+<div id="setup-screen" class="container">
 
-    <div id="quiz-screen" class="container hidden">
-        <div id="streak-display">Streak: 0 🔥</div>
-        <h3 id="question-text">Question goes here?</h3>
-        <div id="options-container"></div>
-    </div>
+<h1>FIRESTREAKS</h1>
 
-    <div id="result-screen" class="container hidden">
-        <h1 id="final-msg">GAME OVER</h1>
-        <p id="final-score"></p>
-        <button class="btn easy-btn" onclick="location.reload()">TRY AGAIN</button>
-    </div>
+<p>Subject: Science, Math, Geography, History</p>
+
+<input type="text" id="playerName" placeholder="Enter Your Name">
+
+<button class="btn easy-btn" onclick="startQuiz('Easy')">START EASY MODE</button>
+
+<button class="btn hard-btn" onclick="startQuiz('Hard')">START HARD MODE</button>
+
+</div>
+
+
+<div id="quiz-screen" class="container hidden">
+
+<div id="streak-display">Streak: 0 🔥</div>
+
+<div id="rank-display">Rank: Beginner</div>
+
+<h3 id="question-text">Question goes here?</h3>
+
+<div id="options-container"></div>
+
+</div>
+
+
+<div id="result-screen" class="container hidden">
+
+<h1 id="final-msg">GAME OVER</h1>
+
+<p id="final-score"></p>
+
+<button class="btn easy-btn" onclick="location.reload()">TRY AGAIN</button>
+
+</div>
+
 
 <script>
 
 const fireQuestions = [
+
 { q: "Math: What is 12 multiplied by 5?", options: ["50", "60", "70", "55"], a: "60", level: "Easy" },
 { q: "Geography: Which continent is the Sahara Desert in?", options: ["Asia", "Africa", "Europe", "South America"], a: "Africa", level: "Easy" },
 { q: "Science: What do bees collect from flowers?", options: ["Nectar", "Water", "Leaves", "Mud"], a: "Nectar", level: "Easy" },
@@ -133,12 +162,32 @@ const fireQuestions = [
 { q: "History: Who painted the Mona Lisa?", options: ["Picasso", "Van Gogh", "Da Vinci", "Michelangelo"], a: "Da Vinci", level: "Hard" },
 { q: "Math: Degrees in a right angle?", options: ["45", "90", "180", "360"], a: "90", level: "Hard" },
 { q: "Science: Light travels in a straight line called a...?", options: ["Ray", "Wave", "Loop", "Particle"], a: "Ray", level: "Hard" }
+
 ];
+
 
 let currentQuestions = [];
 let currentIndex = 0;
 let streak = 0;
 let name = "";
+
+
+function getRank(){
+
+if(streak>=10) return "🔥 FIRE MASTER";
+
+if(streak>=7) return "👑 Fire King";
+
+if(streak>=5) return "⚡ Fire Legend";
+
+if(streak>=3) return "🔥 Fire Warrior";
+
+if(streak>=1) return "🟠 Fire Starter";
+
+return "Beginner";
+
+}
+
 
 function startQuiz(level){
 
@@ -152,10 +201,13 @@ return;
 currentQuestions=fireQuestions.filter(q=>q.level===level);
 
 document.getElementById('setup-screen').classList.add('hidden');
+
 document.getElementById('quiz-screen').classList.remove('hidden');
 
 showQuestion();
+
 }
+
 
 function showQuestion(){
 
@@ -185,7 +237,9 @@ btn.onclick=()=>checkAnswer(opt,q.a);
 container.appendChild(btn);
 
 });
+
 }
+
 
 function checkAnswer(val,correct){
 
@@ -196,34 +250,31 @@ if(val===correct){
 streak++;
 
 if(streak>=3){
-
 quizBox.classList.add('on-fire');
-
 }
 
 if(streak===10){
-
 winGame();
-
 return;
-
 }
 
 }else{
 
 streak=0;
-
 quizBox.classList.remove('on-fire');
 
 }
 
 document.getElementById('streak-display').innerText=`Streak: ${streak} 🔥`;
 
+document.getElementById('rank-display').innerText=`Rank: ${getRank()}`;
+
 currentIndex++;
 
 showQuestion();
 
 }
+
 
 function winGame(){
 
@@ -237,6 +288,7 @@ document.getElementById('final-score').innerText=
 `${name}, you reached 10 streak! You are a FIRE MASTER 🔥`;
 
 }
+
 
 function endQuiz(){
 
