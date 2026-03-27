@@ -1,7 +1,9 @@
-## Hi there 👋
-its a student skill test
-<!--
-**firestreaks/firestreaks** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+"Prove your intellect. Master the Flame."
+Enter the arena of FireStreaks, the ultimate 100-question gauntlet designed to test the limits of your knowledge. Starting as a lowly Spark, you must battle through 10 grueling levels of math, science, and world trivia.
+Each level is a locked gate. To pass, you must maintain a "Fire Streak" of at least 80% accuracy. As the questions evolve from basic addition to complex equations and deep history, so does your rank. Can you survive the heat and ascend to the legendary status of Dragon Master?
+• 10 Progressive Ranks: From Cinder Knight to Inferno Lord.
+• The 100-Question Climb: 10 questions per level, each harder than the last.
+• High-Stakes Scoring: Only the precise survive. 8/10 or you get burned!firestreaks/firestreaks** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
 Here are some ideas to get you started:
 
