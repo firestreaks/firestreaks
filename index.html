@@ -3,235 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FireStreaks Quiz</title>
+    <title>FireStreaks: Dragon's Ascent</title>
     <style>
         :root {
-            --primary: #ff4d00;
-            --dark: #1a1a1a;
-            --gray: #333;
-            --light: #f4f4f4;
+            --fire: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            --deep-fire: #800000;
+            --gold: #ffd700;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--dark);
-            color: var(--light);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            /* Animated Fire Background */
+            background: linear-gradient(-45deg, #230101, #4a0e0e, #800000, #1a0101);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: white;
+            overflow: hidden;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
-            background: #222;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
             text-align: center;
+        }
+
+        .rank-tag {
+            color: var(--gold);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: block;
         }
 
         .hidden { display: none; }
 
-        input[type="text"] {
-            padding: 10px;
-            width: 80%;
-            border-radius: 5px;
-            border: none;
+        input {
+            background: #222;
+            border: 1px solid var(--gold);
+            color: white;
+            padding: 12px;
+            width: 70%;
+            border-radius: 8px;
             margin-bottom: 20px;
+            font-size: 1.1rem;
         }
 
         .btn {
-            background: var(--primary);
-            color: white;
+            background: linear-gradient(to right, #ff4e50, #f9d423);
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 12px 30px;
+            border-radius: 25px;
             font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
             transition: 0.3s;
         }
 
-        .btn:hover { transform: scale(1.05); }
-        .btn:disabled { background: #555; cursor: not-allowed; }
+        .btn:hover { transform: scale(1.1); box-shadow: 0 0 15px #f9d423; }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
         }
 
         .level-btn {
             padding: 15px 5px;
-            background: var(--gray);
-            border-radius: 8px;
+            background: #333;
+            border-radius: 10px;
             cursor: pointer;
-            position: relative;
+            border: 1px solid #555;
         }
 
-        .level-btn.unlocked { background: var(--primary); }
-        .level-btn.locked::after { content: '🔒'; font-size: 10px; display: block; }
+        .level-btn.unlocked { 
+            background: linear-gradient(#800000, #b30000); 
+            border-color: var(--gold);
+        }
+
+        .level-btn.locked { opacity: 0.4; cursor: not-allowed; }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
         }
 
         .option-btn {
-            background: #444;
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 1px solid #444;
+            transition: 0.2s;
         }
 
-        .option-btn:hover { border-color: var(--primary); }
+        .option-btn:hover { background: rgba(255, 69, 0, 0.3); border-color: var(--gold); }
+        
+        #progress-bar {
+            height: 10px;
+            background: #222;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        #progress-fill { height: 100%; background: var(--gold); width: 0%; transition: 0.5s; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div id="lobby">
-            <h1>🔥 FireStreaks</h1>
-            <input type="text" id="username" placeholder="Enter Your Name">
+            <h1 style="font-size: 2.5rem; margin-bottom: 5px;">🔥 FIRE STREAKS</h1>
+            <p style="margin-bottom: 25px; color: #ccc;">Prove your knowledge. Become a Dragon Master.</p>
+            <input type="text" id="username" placeholder="Your Warrior Name...">
             <br>
-            <button class="btn" onclick="goToLevels()">Enter Lobby</button>
+            <button class="btn" onclick="enterLobby()">Begin Quest</button>
         </div>
 
         <div id="level-select" class="hidden">
-            <h2 id="welcome-msg"></h2>
-            <p>Select a Level</p>
+            <span class="rank-tag" id="user-rank">RANK: SPARK</span>
+            <h2 id="welcome-msg" style="margin-top: 0;"></h2>
             <div class="grid" id="level-grid"></div>
         </div>
 
         <div id="quiz-screen" class="hidden">
-            <div id="quiz-header" style="display:flex; justify-content: space-between;">
-                <span id="q-count">Question 1/10</span>
-                <span id="q-level">Level 1</span>
+            <div style="display:flex; justify-content: space-between; font-size: 0.9rem;">
+                <span id="current-rank-display">DRAGON SLAYER</span>
+                <span id="q-count">1/10</span>
             </div>
-            <h3 id="question-text">Question goes here?</h3>
+            <div id="progress-bar"><div id="progress-fill"></div></div>
+            <h3 id="question-text" style="min-height: 60px;">Question?</h3>
             <div class="options-grid" id="options-container"></div>
         </div>
 
         <div id="result-screen" class="hidden">
-            <h2 id="result-title">Level Complete!</h2>
-            <p id="result-score"></p>
-            <button class="btn" onclick="goToLevels()">Back to Levels</button>
+            <h2 id="result-title">Victory!</h2>
+            <p id="result-score" style="font-size: 1.5rem;"></p>
+            <button class="btn" onclick="showLevelMap()">Back to Map</button>
         </div>
     </div>
 
     <script>
-        let currentUser = "";
-        let unlockedLevel = 1;
-        let currentLevel = 1;
-        let currentQuestionIdx = 0;
+        let userName = "";
+        let unlocked = 1;
+        let currentLvl = 1;
+        let currentQIdx = 0;
         let score = 0;
 
-        // Sample Data - Extend this to Level 10
-        const quizData = {
-            1: [
-                { q: "What is 2 + 2?", a: ["3", "4", "5", "22"], correct: 1 },
-                { q: "Color of the sky?", a: ["Green", "Blue", "Red", "Yellow"], correct: 1 },
-                // ... add 8 more
-            ],
-            2: [
-                { q: "Capital of France?", a: ["London", "Berlin", "Paris", "Rome"], correct: 2 },
-                { q: "Which planet is red?", a: ["Mars", "Venus", "Jupiter", "Earth"], correct: 0 },
-                // ... add 8 more
-            ],
-            // Add levels 3-10 here
-        };
+        const ranks = [
+            "Spark", "Ember", "Flame", "Blaze", "Cinder Knight", 
+            "Pyromancer", "Phoenix Rider", "Dragon Slayer", "Inferno Lord", "DRAGON MASTER"
+        ];
 
-        // Fill in placeholders for levels 3-10 so the logic doesn't break
-        for(let i=3; i<=10; i++) {
-            quizData[i] = Array(10).fill({ q: `Level ${i} Question`, a: ["A", "B", "C", "D"], correct: 0 });
+        // 10 Levels x 10 Questions = 100 Questions
+        const quizDatabase = {};
+        for (let l = 1; l <= 10; l++) {
+            quizDatabase[l] = [];
+            for (let q = 1; q <= 10; q++) {
+                // Harder questions logic placeholder
+                const diff = l < 4 ? "Easy" : l < 8 ? "Medium" : "SUPER HARD";
+                quizDatabase[l].push({
+                    q: `[Lvl ${l}] ${diff} Quest #${q}: What is ${l * q} + ${l + q}?`,
+                    a: [`${(l*q)+(l+q)}`, `${(l*q)+q}`, `${l+q+1}`, "None"],
+                    correct: 0
+                });
+            }
         }
 
-        function goToLevels() {
-            const nameInput = document.getElementById('username').value;
-            if (nameInput) currentUser = nameInput;
-            
+        // Specifically overwriting the "Super Hard" Level 10
+        quizDatabase[10][0] = { q: "Which particle is its own antiparticle?", a: ["Electron", "Neutrino", "Photon", "Proton"], correct: 2 };
+        quizDatabase[10][1] = { q: "What is the square root of 1024?", a: ["32", "28", "34", "38"], correct: 0 };
+
+        function enterLobby() {
+            userName = document.getElementById('username').value || "Unknown Warrior";
+            showLevelMap();
+        }
+
+        function showLevelMap() {
             document.getElementById('lobby').classList.add('hidden');
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.add('hidden');
             document.getElementById('level-select').classList.remove('hidden');
             
-            document.getElementById('welcome-msg').innerText = `Warrior: ${currentUser}`;
-            renderLevels();
-        }
-
-        function renderLevels() {
+            document.getElementById('welcome-msg').innerText = userName;
+            document.getElementById('user-rank').innerText = `RANK: ${ranks[unlocked-1]}`;
+            
             const grid = document.getElementById('level-grid');
             grid.innerHTML = '';
             for (let i = 1; i <= 10; i++) {
                 const btn = document.createElement('div');
-                btn.className = `level-btn ${i <= unlockedLevel ? 'unlocked' : 'locked'}`;
-                btn.innerText = `Lvl ${i}`;
-                if (i <= unlockedLevel) {
-                    btn.onclick = () => startQuiz(i);
-                }
+                btn.className = `level-btn ${i <= unlocked ? 'unlocked' : 'locked'}`;
+                btn.innerHTML = `<small>${ranks[i-1]}</small><br><b>LVL ${i}</b>`;
+                if (i <= unlocked) btn.onclick = () => startLevel(i);
                 grid.appendChild(btn);
             }
         }
 
-        function startQuiz(lvl) {
-            currentLevel = lvl;
-            currentQuestionIdx = 0;
+        function startLevel(lvl) {
+            currentLvl = lvl;
+            currentQIdx = 0;
             score = 0;
             document.getElementById('level-select').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
-            showQuestion();
+            document.getElementById('current-rank-display').innerText = ranks[lvl-1];
+            loadQuestion();
         }
 
-        function showQuestion() {
-            const data = quizData[currentLevel][currentQuestionIdx];
-            document.getElementById('q-count').innerText = `Question ${currentQuestionIdx + 1}/10`;
-            document.getElementById('q-level').innerText = `Level ${currentLevel}`;
+        function loadQuestion() {
+            const data = quizDatabase[currentLvl][currentQIdx];
+            document.getElementById('q-count').innerText = `${currentQIdx + 1}/10`;
             document.getElementById('question-text').innerText = data.q;
+            document.getElementById('progress-fill').style.width = `${(currentQIdx / 10) * 100}%`;
             
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-            
-            data.a.forEach((opt, index) => {
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            data.a.forEach((opt, i) => {
                 const btn = document.createElement('div');
                 btn.className = 'option-btn';
                 btn.innerText = opt;
-                btn.onclick = () => checkAnswer(index);
-                optionsContainer.appendChild(btn);
+                btn.onclick = () => handleAnswer(i);
+                container.appendChild(btn);
             });
         }
 
-        function checkAnswer(selected) {
-            const correct = quizData[currentLevel][currentQuestionIdx].correct;
-            if (selected === correct) score++;
-
-            currentQuestionIdx++;
-            if (currentQuestionIdx < 10) {
-                showQuestion();
-            } else {
-                finishLevel();
-            }
+        function handleAnswer(choice) {
+            if (choice === quizDatabase[currentLvl][currentQIdx].correct) score++;
+            currentQIdx++;
+            if (currentQIdx < 10) loadQuestion();
+            else finishLevel();
         }
 
         function finishLevel() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             
-            const passed = score >= 7; // Require 7/10 to pass
-            document.getElementById('result-score').innerText = `You scored ${score}/10`;
+            const passed = score >= 8; // Must get 8/10 to advance
+            document.getElementById('result-score').innerText = `Score: ${score}/10`;
 
             if (passed) {
-                document.getElementById('result-title').innerText = "🔥 Level Cleared!";
-                if (currentLevel === unlockedLevel && unlockedLevel < 10) {
-                    unlockedLevel++;
-                }
+                document.getElementById('result-title').innerText = "🔥 ASCENDED!";
+                if (currentLvl === unlocked && unlocked < 10) unlocked++;
             } else {
-                document.getElementById('result-title').innerText = "❌ Try Again";
+                document.getElementById('result-title').innerText = "💀 BURNED (Failed)";
             }
         }
     </script>
