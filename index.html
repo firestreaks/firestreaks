@@ -1,307 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Firestreaks | Educational Qualifier</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireStreaks Quiz</title>
+    <style>
+        :root {
+            --primary: #ff4d00;
+            --dark: #1a1a1a;
+            --gray: #333;
+            --light: #f4f4f4;
+        }
 
-<style>
-:root {
---fire-orange: #ff4500;
---fire-yellow: #ffca28;
---dark-bg: #1a1a1a;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-body {
-font-family: 'Segoe UI', sans-serif;
-background-color: var(--dark-bg);
-color: white;
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100vh;
-margin: 0;
-overflow: hidden;
-}
+        .container {
+            background: #222;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
 
-.container {
-background: #2d2d2d;
-padding: 30px;
-border-radius: 20px;
-border: 2px solid var(--fire-orange);
-box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
-text-align: center;
-width: 400px;
-position: relative;
-}
+        .hidden { display: none; }
 
-h1 { color: var(--fire-yellow); letter-spacing: 3px; margin-top: 0; }
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 20px;
+        }
 
-input {
-width: 80%;
-padding: 12px;
-margin: 20px 0;
-border-radius: 8px;
-border: 1px solid var(--fire-orange);
-background: #3d3d3d;
-color: white;
-font-size: 16px;
-text-align: center;
-}
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
-.btn {
-width: 100%;
-padding: 15px;
-margin: 10px 0;
-border: none;
-border-radius: 8px;
-font-weight: bold;
-cursor: pointer;
-transition: 0.3s;
-font-size: 16px;
-}
+        .btn:hover { transform: scale(1.05); }
+        .btn:disabled { background: #555; cursor: not-allowed; }
 
-.easy-btn { background: var(--fire-yellow); color: black; }
-.hard-btn { background: var(--fire-orange); color: white; }
-.option-btn { background: #444; color: white; margin: 5px 0; }
-.option-btn:hover { background: #555; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
 
-.hidden { display: none; }
+        .level-btn {
+            padding: 15px 5px;
+            background: var(--gray);
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+        }
 
-#streak-display {
-font-size: 24px;
-color: var(--fire-yellow);
-margin-bottom: 5px;
-font-weight: bold;
-}
+        .level-btn.unlocked { background: var(--primary); }
+        .level-btn.locked::after { content: '🔒'; font-size: 10px; display: block; }
 
-#rank-display{
-font-size:18px;
-color:#00e5ff;
-margin-bottom:10px;
-font-weight:bold;
-}
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
-.on-fire {
-animation: shake 0.5s infinite;
-border: 4px solid var(--fire-yellow);
-box-shadow: 0 0 40px var(--fire-orange);
-}
+        .option-btn {
+            background: #444;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
 
-@keyframes shake {
-0% { transform: translate(1px, 1px) rotate(0deg); }
-50% { transform: translate(-1px, -2px) rotate(-1deg); }
-100% { transform: translate(1px, 1px) rotate(0deg); }
-}
-</style>
+        .option-btn:hover { border-color: var(--primary); }
+    </style>
 </head>
-
 <body>
 
-<div id="setup-screen" class="container">
-
-<h1>FIRESTREAKS</h1>
-
-<p>Subject: Science, Math, Geography, History</p>
-
-<input type="text" id="playerName" placeholder="Enter Your Name">
-
-<button class="btn easy-btn" onclick="startQuiz('Easy')">START EASY MODE</button>
-
-<button class="btn hard-btn" onclick="startQuiz('Hard')">START HARD MODE</button>
-
-</div>
-
-
-<div id="quiz-screen" class="container hidden">
-
-<div id="streak-display">Streak: 0 🔥</div>
-
-<div id="rank-display">Rank: Beginner</div>
-
-<h3 id="question-text">Question goes here?</h3>
-
-<div id="options-container"></div>
-
-</div>
-
-
-<div id="result-screen" class="container hidden">
-
-<h1 id="final-msg">GAME OVER</h1>
-
-<p id="final-score"></p>
-
-<button class="btn easy-btn" onclick="location.reload()">TRY AGAIN</button>
-
-</div>
-
-
-<script>
-
-const fireQuestions = [
-
-{ q: "Math: What is 12 multiplied by 5?", options: ["50", "60", "70", "55"], a: "60", level: "Easy" },
-{ q: "Geography: Which continent is the Sahara Desert in?", options: ["Asia", "Africa", "Europe", "South America"], a: "Africa", level: "Easy" },
-{ q: "Science: What do bees collect from flowers?", options: ["Nectar", "Water", "Leaves", "Mud"], a: "Nectar", level: "Easy" },
-{ q: "History: Who was the first person to step on the Moon?", options: ["Neil Armstrong", "Buzz Lightyear", "Elon Musk", "Einstein"], a: "Neil Armstrong", level: "Easy" },
-{ q: "Math: A triangle has how many sides?", options: ["2", "3", "4", "5"], a: "3", level: "Easy" },
-{ q: "Geography: What is the capital of France?", options: ["London", "Berlin", "Paris", "Rome"], a: "Paris", level: "Easy" },
-{ q: "Science: Which planet is the 'Red Planet'?", options: ["Venus", "Mars", "Jupiter", "Saturn"], a: "Mars", level: "Easy" },
-{ q: "History: Who built the Great Pyramids?", options: ["Romans", "Greeks", "Egyptians", "Mayans"], a: "Egyptians", level: "Easy" },
-{ q: "Math: What is half of 100?", options: ["25", "50", "75", "10"], a: "50", level: "Easy" },
-{ q: "Science: What state of matter is ice?", options: ["Liquid", "Gas", "Solid", "Plasma"], a: "Solid", level: "Easy" },
-
-{ q: "Math: What is the square root of 144?", options: ["10", "11", "12", "14"], a: "12", level: "Hard" },
-{ q: "Geography: Smallest country in the world?", options: ["Monaco", "Malta", "Vatican City", "San Marino"], a: "Vatican City", level: "Hard" },
-{ q: "Science: Chemical symbol for Gold?", options: ["Gd", "Ag", "Fe", "Au"], a: "Au", level: "Hard" },
-{ q: "History: In what year did World War II end?", options: ["1918", "1945", "1950", "1939"], a: "1945", level: "Hard" },
-{ q: "Math: If 3x = 15, what is x?", options: ["3", "5", "10", "45"], a: "5", level: "Hard" },
-{ q: "Geography: Longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], a: "Nile", level: "Hard" },
-{ q: "Science: Most abundant gas in atmosphere?", options: ["Oxygen", "CO2", "Nitrogen", "Hydrogen"], a: "Nitrogen", level: "Hard" },
-{ q: "History: Who painted the Mona Lisa?", options: ["Picasso", "Van Gogh", "Da Vinci", "Michelangelo"], a: "Da Vinci", level: "Hard" },
-{ q: "Math: Degrees in a right angle?", options: ["45", "90", "180", "360"], a: "90", level: "Hard" },
-{ q: "Science: Light travels in a straight line called a...?", options: ["Ray", "Wave", "Loop", "Particle"], a: "Ray", level: "Hard" }
-
-];
-
-
-let currentQuestions = [];
-let currentIndex = 0;
-let streak = 0;
-let name = "";
-
-
-function getRank(){
-
-if(streak>=10) return "🔥 FIRE MASTER";
-
-if(streak>=7) return "👑 Fire King";
-
-if(streak>=5) return "⚡ Fire Legend";
-
-if(streak>=3) return "🔥 Fire Warrior";
-
-if(streak>=1) return "🟠 Fire Starter";
-
-return "Beginner";
-
-}
-
-
-function startQuiz(level){
-
-name=document.getElementById('playerName').value;
-
-if(!name){
-alert("Enter your name!");
-return;
-}
-
-currentQuestions=fireQuestions.filter(q=>q.level===level);
-
-document.getElementById('setup-screen').classList.add('hidden');
-
-document.getElementById('quiz-screen').classList.remove('hidden');
-
-showQuestion();
-
-}
-
-
-function showQuestion(){
-
-if(currentIndex>=currentQuestions.length){
-endQuiz();
-return;
-}
-
-const q=currentQuestions[currentIndex];
-
-document.getElementById('question-text').innerText=q.q;
-
-const container=document.getElementById('options-container');
-
-container.innerHTML="";
-
-q.options.forEach(opt=>{
-
-const btn=document.createElement('button');
-
-btn.className="btn option-btn";
-
-btn.innerText=opt;
-
-btn.onclick=()=>checkAnswer(opt,q.a);
-
-container.appendChild(btn);
-
-});
-
-}
-
-
-function checkAnswer(val,correct){
-
-const quizBox=document.getElementById('quiz-screen');
-
-if(val===correct){
-
-streak++;
-
-if(streak>=3){
-quizBox.classList.add('on-fire');
-}
-
-if(streak===10){
-winGame();
-return;
-}
-
-}else{
-
-streak=0;
-quizBox.classList.remove('on-fire');
-
-}
-
-document.getElementById('streak-display').innerText=`Streak: ${streak} 🔥`;
-
-document.getElementById('rank-display').innerText=`Rank: ${getRank()}`;
-
-currentIndex++;
-
-showQuestion();
-
-}
-
-
-function winGame(){
-
-document.getElementById('quiz-screen').classList.add('hidden');
-
-document.getElementById('result-screen').classList.remove('hidden');
-
-document.getElementById('final-msg').innerText="🏆 YOU WON FIRESTREAKS!";
-
-document.getElementById('final-score').innerText=
-`${name}, you reached 10 streak! You are a FIRE MASTER 🔥`;
-
-}
-
-
-function endQuiz(){
-
-document.getElementById('quiz-screen').classList.add('hidden');
-
-document.getElementById('result-screen').classList.remove('hidden');
-
-document.getElementById('final-score').innerText=
-`${name}, your final streak was ${streak}`;
-
-}
-
-</script>
-
+    <div class="container">
+        <div id="lobby">
+            <h1>🔥 FireStreaks</h1>
+            <input type="text" id="username" placeholder="Enter Your Name">
+            <br>
+            <button class="btn" onclick="goToLevels()">Enter Lobby</button>
+        </div>
+
+        <div id="level-select" class="hidden">
+            <h2 id="welcome-msg"></h2>
+            <p>Select a Level</p>
+            <div class="grid" id="level-grid"></div>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div id="quiz-header" style="display:flex; justify-content: space-between;">
+                <span id="q-count">Question 1/10</span>
+                <span id="q-level">Level 1</span>
+            </div>
+            <h3 id="question-text">Question goes here?</h3>
+            <div class="options-grid" id="options-container"></div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h2 id="result-title">Level Complete!</h2>
+            <p id="result-score"></p>
+            <button class="btn" onclick="goToLevels()">Back to Levels</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = "";
+        let unlockedLevel = 1;
+        let currentLevel = 1;
+        let currentQuestionIdx = 0;
+        let score = 0;
+
+        // Sample Data - Extend this to Level 10
+        const quizData = {
+            1: [
+                { q: "What is 2 + 2?", a: ["3", "4", "5", "22"], correct: 1 },
+                { q: "Color of the sky?", a: ["Green", "Blue", "Red", "Yellow"], correct: 1 },
+                // ... add 8 more
+            ],
+            2: [
+                { q: "Capital of France?", a: ["London", "Berlin", "Paris", "Rome"], correct: 2 },
+                { q: "Which planet is red?", a: ["Mars", "Venus", "Jupiter", "Earth"], correct: 0 },
+                // ... add 8 more
+            ],
+            // Add levels 3-10 here
+        };
+
+        // Fill in placeholders for levels 3-10 so the logic doesn't break
+        for(let i=3; i<=10; i++) {
+            quizData[i] = Array(10).fill({ q: `Level ${i} Question`, a: ["A", "B", "C", "D"], correct: 0 });
+        }
+
+        function goToLevels() {
+            const nameInput = document.getElementById('username').value;
+            if (nameInput) currentUser = nameInput;
+            
+            document.getElementById('lobby').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('level-select').classList.remove('hidden');
+            
+            document.getElementById('welcome-msg').innerText = `Warrior: ${currentUser}`;
+            renderLevels();
+        }
+
+        function renderLevels() {
+            const grid = document.getElementById('level-grid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('div');
+                btn.className = `level-btn ${i <= unlockedLevel ? 'unlocked' : 'locked'}`;
+                btn.innerText = `Lvl ${i}`;
+                if (i <= unlockedLevel) {
+                    btn.onclick = () => startQuiz(i);
+                }
+                grid.appendChild(btn);
+            }
+        }
+
+        function startQuiz(lvl) {
+            currentLevel = lvl;
+            currentQuestionIdx = 0;
+            score = 0;
+            document.getElementById('level-select').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const data = quizData[currentLevel][currentQuestionIdx];
+            document.getElementById('q-count').innerText = `Question ${currentQuestionIdx + 1}/10`;
+            document.getElementById('q-level').innerText = `Level ${currentLevel}`;
+            document.getElementById('question-text').innerText = data.q;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            data.a.forEach((opt, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected) {
+            const correct = quizData[currentLevel][currentQuestionIdx].correct;
+            if (selected === correct) score++;
+
+            currentQuestionIdx++;
+            if (currentQuestionIdx < 10) {
+                showQuestion();
+            } else {
+                finishLevel();
+            }
+        }
+
+        function finishLevel() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            const passed = score >= 7; // Require 7/10 to pass
+            document.getElementById('result-score').innerText = `You scored ${score}/10`;
+
+            if (passed) {
+                document.getElementById('result-title').innerText = "🔥 Level Cleared!";
+                if (currentLevel === unlockedLevel && unlockedLevel < 10) {
+                    unlockedLevel++;
+                }
+            } else {
+                document.getElementById('result-title').innerText = "❌ Try Again";
+            }
+        }
+    </script>
 </body>
 </html>
