@@ -3,268 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FireStreaks: Dragon's Ascent</title>
+    <title>FireStreaks: Dragon Master</title>
     <style>
         :root {
-            --fire: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            --deep-fire: #800000;
-            --gold: #ffd700;
+            --fire-gold: #ffd700;
+            --fire-red: #ff4500;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             margin: 0;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Animated Fire Background */
             background: linear-gradient(-45deg, #230101, #4a0e0e, #800000, #1a0101);
             background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
+            animation: fireGradient 12s ease infinite;
             color: white;
             overflow: hidden;
         }
 
-        @keyframes gradient {
+        @keyframes fireGradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
         .container {
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             padding: 30px;
             border-radius: 20px;
-            border: 2px solid var(--gold);
-            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+            border: 2px solid var(--fire-gold);
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.4);
             width: 90%;
-            max-width: 600px;
+            max-width: 650px;
             text-align: center;
         }
 
-        .rank-tag {
-            color: var(--gold);
+        .rank-badge {
+            color: var(--fire-gold);
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
             display: block;
+            text-shadow: 0 0 10px var(--fire-red);
         }
 
         .hidden { display: none; }
 
         input {
-            background: #222;
-            border: 1px solid var(--gold);
+            background: #111;
+            border: 1px solid var(--fire-gold);
             color: white;
-            padding: 12px;
-            width: 70%;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+            padding: 15px;
+            width: 80%;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            outline: none;
         }
 
         .btn {
-            background: linear-gradient(to right, #ff4e50, #f9d423);
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
+            background: linear-gradient(45deg, #800000, #ff4500);
+            border: 1px solid var(--fire-gold);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
             font-weight: bold;
             cursor: pointer;
-            text-transform: uppercase;
             transition: 0.3s;
+            text-transform: uppercase;
         }
 
-        .btn:hover { transform: scale(1.1); box-shadow: 0 0 15px #f9d423; }
+        .btn:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--fire-red); }
 
-        .grid {
+        .level-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
+            gap: 12px;
             margin-top: 20px;
         }
 
-        .level-btn {
+        .lvl-box {
             padding: 15px 5px;
-            background: #333;
+            background: #222;
             border-radius: 10px;
             cursor: pointer;
-            border: 1px solid #555;
+            border: 1px solid #444;
+            font-size: 0.8rem;
         }
 
-        .level-btn.unlocked { 
-            background: linear-gradient(#800000, #b30000); 
-            border-color: var(--gold);
-        }
-
-        .level-btn.locked { opacity: 0.4; cursor: not-allowed; }
+        .lvl-box.unlocked { background: #600; border-color: var(--fire-gold); }
+        .lvl-box.locked { opacity: 0.3; cursor: not-allowed; }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
-        .option-btn {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+        .opt-btn {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 18px;
+            border-radius: 12px;
             cursor: pointer;
-            border: 1px solid #444;
+            border: 1px solid #333;
             transition: 0.2s;
         }
 
-        .option-btn:hover { background: rgba(255, 69, 0, 0.3); border-color: var(--gold); }
-        
-        #progress-bar {
-            height: 10px;
-            background: #222;
-            border-radius: 5px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        #progress-fill { height: 100%; background: var(--gold); width: 0%; transition: 0.5s; }
+        .opt-btn:hover { background: rgba(255, 69, 0, 0.2); border-color: var(--fire-gold); }
+
+        #bar-bg { height: 8px; background: #222; border-radius: 4px; margin: 20px 0; }
+        #bar-fill { height: 100%; background: var(--fire-gold); width: 0%; transition: 0.4s; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div id="lobby">
-            <h1 style="font-size: 2.5rem; margin-bottom: 5px;">🔥 FIRE STREAKS</h1>
-            <p style="margin-bottom: 25px; color: #ccc;">Prove your knowledge. Become a Dragon Master.</p>
-            <input type="text" id="username" placeholder="Your Warrior Name...">
+            <h1 style="font-size: 3rem; margin: 0; color: var(--fire-red);">🔥 FIRE STREAKS</h1>
+            <p style="color: #aaa; margin-bottom: 30px;">THE 100-QUESTION CHALLENGE</p>
+            <input type="text" id="username" placeholder="Warrior Name...">
             <br>
-            <button class="btn" onclick="enterLobby()">Begin Quest</button>
+            <button class="btn" onclick="enterLobby()">Enter the Fire</button>
         </div>
 
-        <div id="level-select" class="hidden">
-            <span class="rank-tag" id="user-rank">RANK: SPARK</span>
-            <h2 id="welcome-msg" style="margin-top: 0;"></h2>
-            <div class="grid" id="level-grid"></div>
+        <div id="map" class="hidden">
+            <span class="rank-badge" id="current-rank">RANK: SPARK</span>
+            <h2 id="greet" style="margin: 0;"></h2>
+            <div class="level-grid" id="lvl-btns"></div>
         </div>
 
-        <div id="quiz-screen" class="hidden">
-            <div style="display:flex; justify-content: space-between; font-size: 0.9rem;">
-                <span id="current-rank-display">DRAGON SLAYER</span>
-                <span id="q-count">1/10</span>
+        <div id="quiz" class="hidden">
+            <div style="display:flex; justify-content: space-between; font-weight: bold;">
+                <span id="rank-display" style="color: var(--fire-gold);">LEVEL</span>
+                <span id="q-num">1/10</span>
             </div>
-            <div id="progress-bar"><div id="progress-fill"></div></div>
-            <h3 id="question-text" style="min-height: 60px;">Question?</h3>
-            <div class="options-grid" id="options-container"></div>
+            <div id="bar-bg"><div id="bar-fill"></div></div>
+            <h2 id="q-text" style="min-height: 80px; font-size: 1.4rem;"></h2>
+            <div class="options-grid" id="opts"></div>
         </div>
 
-        <div id="result-screen" class="hidden">
-            <h2 id="result-title">Victory!</h2>
-            <p id="result-score" style="font-size: 1.5rem;"></p>
-            <button class="btn" onclick="showLevelMap()">Back to Map</button>
+        <div id="results" class="hidden">
+            <h1 id="res-title">LEVEL PASSED!</h1>
+            <p id="res-score" style="font-size: 2rem;"></p>
+            <button class="btn" onclick="showMap()">Return to Map</button>
         </div>
     </div>
 
     <script>
-        let userName = "";
-        let unlocked = 1;
-        let currentLvl = 1;
-        let currentQIdx = 0;
+        let uName = "";
+        let progress = 1;
+        let activeLvl = 1;
+        let qIdx = 0;
         let score = 0;
 
-        const ranks = [
-            "Spark", "Ember", "Flame", "Blaze", "Cinder Knight", 
-            "Pyromancer", "Phoenix Rider", "Dragon Slayer", "Inferno Lord", "DRAGON MASTER"
+        const ranks = ["Spark", "Ember", "Flame", "Blaze", "Cinder Knight", "Pyromancer", "Phoenix Rider", "Dragon Slayer", "Inferno Lord", "DRAGON MASTER"];
+
+        const rawData = [
+            ["What is 2 + 3?", "5", "4", "6", "7", 0],
+            ["What planet do we live on?", "Mars", "Earth", "Venus", "Jupiter", 1],
+            ["What shape has 3 sides?", "Square", "Circle", "Triangle", "Hexagon", 2],
+            ["Who invented the light bulb?", "Tesla", "Einstein", "Edison", "Newton", 2],
+            ["What is 10 - 4?", "5", "6", "7", "4", 1],
+            ["What gas do humans breathe in?", "Oxygen", "Nitrogen", "CO2", "Helium", 0],
+            ["What is the capital of India?", "Mumbai", "New Delhi", "Kolkata", "Chennai", 1],
+            ["What is 5 × 2?", "7", "12", "10", "25", 2],
+            ["What is water made of (basic)?", "H2O", "CO2", "NaCl", "O2", 0],
+            ["What is 12 ÷ 3?", "3", "4", "5", "6", 1],
+            ["What is 8 × 4?", "32", "28", "36", "40", 0],
+            ["What planet is known as the Red Planet?", "Venus", "Mars", "Saturn", "Mercury", 1],
+            ["What is the largest ocean?", "Atlantic", "Indian", "Pacific", "Arctic", 2],
+            ["What is 100 - 45?", "55", "65", "45", "50", 0],
+            ["What is 6 × 7?", "42", "48", "36", "49", 0],
+            ["What is the boiling point of water (°C)?", "90", "110", "100", "80", 2],
+            ["Who was the first PM of India?", "Nehru", "Gandhi", "Modi", "Patel", 0],
+            ["What is 9²?", "18", "72", "81", "99", 2],
+            ["What shape has 4 equal sides?", "Rectangle", "Square", "Triangle", "Rhombus", 1],
+            ["What is 72 ÷ 8?", "7", "8", "9", "10", 2],
+            ["What is 15% of 100?", "10", "15", "20", "25", 1],
+            ["What is the hardest natural substance?", "Gold", "Iron", "Diamond", "Stone", 2],
+            ["What is the capital of France?", "Berlin", "Paris", "London", "Madrid", 1],
+            ["What is 14 × 3?", "42", "32", "52", "44", 0],
+            ["What is 81 ÷ 9?", "7", "8", "9", "10", 2],
+            ["What part of the plant makes food?", "Root", "Stem", "Leaf", "Flower", 2],
+            ["What is 5³?", "15", "25", "125", "75", 2],
+            ["What is the longest river?", "Amazon", "Nile", "Mississippi", "Ganges", 1],
+            ["What is 64 ÷ 4?", "14", "16", "18", "12", 1],
+            ["What is 7 × 9?", "56", "64", "63", "72", 2],
+            ["What is 25% of 200?", "25", "50", "75", "100", 1],
+            ["What gas do plants release?", "Oxygen", "Nitrogen", "CO2", "Hydrogen", 0],
+            ["What is the capital of Japan?", "Seoul", "Beijing", "Tokyo", "Bangkok", 2],
+            ["What is 13 × 13?", "169", "144", "196", "133", 0],
+            ["What is 1000 - 478?", "522", "622", "532", "512", 0],
+            ["Who discovered gravity?", "Galileo", "Newton", "Einstein", "Hawking", 1],
+            ["What is 3/4 of 80?", "40", "50", "60", "70", 2],
+            ["What is 9 × 12?", "108", "98", "118", "102", 0],
+            ["What is the freezing point of water?", "10°C", "0°C", "-10°C", "32°C", 1],
+            ["What is 225 ÷ 15?", "12", "15", "25", "18", 1],
+            ["What is 20% of 350?", "70", "60", "80", "50", 0],
+            ["Chemical symbol for gold?", "Ag", "Pb", "Au", "Fe", 2],
+            ["Who wrote the Ramayana?", "Valmiki", "Vyasa", "Tulsidas", "Kalidasa", 0],
+            ["What is 17 × 6?", "102", "112", "92", "104", 0],
+            ["What is 121 ÷ 11?", "10", "11", "12", "13", 1],
+            ["What is 8² + 2²?", "64", "68", "70", "66", 1],
+            ["What is the largest continent?", "Africa", "Asia", "Europe", "N. America", 1],
+            ["What is 500 ÷ 25?", "20", "25", "15", "30", 0],
+            ["What is 36 × 4?", "144", "124", "134", "154", 0],
+            ["What is 19 × 3?", "51", "57", "61", "47", 1],
+            ["What is 400 - 198?", "202", "192", "212", "200", 0],
+            ["Speed of light (km/s)?", "150k", "300k", "500k", "1M", 1],
+            ["Capital of USA?", "NYC", "LA", "Washington DC", "Chicago", 2],
+            ["What is 15 × 15?", "225", "215", "235", "255", 0],
+            ["What is 600 ÷ 20?", "20", "30", "40", "60", 1],
+            ["What is 14²?", "186", "196", "176", "206", 1],
+            ["What organ pumps blood?", "Lungs", "Brain", "Heart", "Liver", 2],
+            ["What is 7 × 8 × 2?", "112", "102", "122", "96", 0],
+            ["What is 3² + 4²?", "25", "49", "12", "20", 0],
+            ["What is 1000 ÷ 10 × 5?", "50", "500", "5", "5000", 1],
+            ["What is 125 × 4?", "400", "500", "600", "450", 1],
+            ["Who discovered electricity?", "Franklin", "Tesla", "Bell", "Edison", 0],
+            ["Tallest mountain?", "K2", "Everest", "Fuji", "Lhotse", 1],
+            ["What is 18²?", "324", "314", "334", "224", 0],
+            ["What is 256 ÷ 16?", "14", "16", "18", "24", 1],
+            ["What is 75% of 240?", "180", "160", "200", "150", 0],
+            ["What is DNA?", "Protein", "Acid", "Genetic Code", "Cell", 2],
+            ["What is 22 × 13?", "286", "276", "296", "266", 0],
+            ["What is 1024 ÷ 8?", "128", "118", "138", "108", 0],
+            ["What is 19²?", "361", "351", "341", "381", 0],
+            ["What is 45 × 12?", "540", "520", "550", "440", 0],
+            ["Largest planet?", "Earth", "Saturn", "Jupiter", "Neptune", 2],
+            ["What is 999 - 678?", "321", "311", "331", "301", 0],
+            ["What is 2³ × 5²?", "100", "200", "400", "150", 1],
+            ["What is 144 × 3?", "432", "422", "442", "412", 0],
+            ["What is 625 ÷ 25?", "25", "15", "35", "5", 0],
+            ["Smallest prime number?", "0", "1", "2", "3", 2],
+            ["What is 17 × 17?", "289", "279", "269", "299", 0],
+            ["What is 1200 ÷ 30?", "40", "30", "50", "60", 0],
+            ["What is 8 × 7 × 6?", "336", "326", "346", "316", 0],
+            ["What is 3/5 of 200?", "120", "100", "140", "80", 0],
+            ["What is 400 × 0.5?", "200", "400", "100", "800", 0],
+            ["What is 81 × 11?", "891", "811", "881", "901", 0],
+            ["What is 72 × 8?", "576", "566", "586", "546", 0],
+            ["What is 250% of 40?", "80", "100", "120", "150", 1],
+            ["What is 90²?", "8100", "1800", "9000", "7200", 0],
+            ["Who discovered penicillin?", "Fleming", "Pasteur", "Curie", "Lister", 0],
+            ["What is 1001 - 499?", "502", "512", "492", "522", 0],
+            ["What is 36 × 25?", "900", "800", "850", "950", 0],
+            ["What is 144 ÷ 6 × 2?", "48", "12", "24", "36", 0],
+            ["What is 7³?", "343", "243", "443", "216", 0],
+            ["What is 999 × 9?", "8991", "8111", "9991", "8999", 0],
+            ["What is 123 × 45?", "5535", "5435", "5635", "5335", 0],
+            ["What is 256 × 16?", "4096", "2048", "8192", "4196", 0],
+            ["What is 1024 ÷ 32?", "32", "16", "64", "24", 0],
+            ["What is 75 × 75?", "5625", "5525", "5725", "6225", 0],
+            ["What is 48 × 48?", "2304", "2404", "2204", "2314", 0],
+            ["What is 13³?", "2197", "1331", "2297", "2097", 0],
+            ["What is 12³?", "1728", "1444", "1828", "1628", 0],
+            ["What is 999 × 999?", "998001", "999001", "998011", "997001", 0]
         ];
 
-        // 10 Levels x 10 Questions = 100 Questions
-        const quizDatabase = {};
-        for (let l = 1; l <= 10; l++) {
-            quizDatabase[l] = [];
-            for (let q = 1; q <= 10; q++) {
-                // Harder questions logic placeholder
-                const diff = l < 4 ? "Easy" : l < 8 ? "Medium" : "SUPER HARD";
-                quizDatabase[l].push({
-                    q: `[Lvl ${l}] ${diff} Quest #${q}: What is ${l * q} + ${l + q}?`,
-                    a: [`${(l*q)+(l+q)}`, `${(l*q)+q}`, `${l+q+1}`, "None"],
-                    correct: 0
-                });
-            }
-        }
-
-        // Specifically overwriting the "Super Hard" Level 10
-        quizDatabase[10][0] = { q: "Which particle is its own antiparticle?", a: ["Electron", "Neutrino", "Photon", "Proton"], correct: 2 };
-        quizDatabase[10][1] = { q: "What is the square root of 1024?", a: ["32", "28", "34", "38"], correct: 0 };
+        // Format into 10 levels of 10
+        const levels = [];
+        for(let i=0; i<10; i++) levels.push(rawData.slice(i*10, (i+1)*10));
 
         function enterLobby() {
-            userName = document.getElementById('username').value || "Unknown Warrior";
-            showLevelMap();
+            uName = document.getElementById('username').value || "Warrior";
+            showMap();
         }
 
-        function showLevelMap() {
-            document.getElementById('lobby').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.add('hidden');
-            document.getElementById('level-select').classList.remove('hidden');
+        function showMap() {
+            document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById('map').classList.remove('hidden');
+            document.getElementById('greet').innerText = uName;
+            document.getElementById('current-rank').innerText = `RANK: ${ranks[progress-1]}`;
             
-            document.getElementById('welcome-msg').innerText = userName;
-            document.getElementById('user-rank').innerText = `RANK: ${ranks[unlocked-1]}`;
-            
-            const grid = document.getElementById('level-grid');
+            const grid = document.getElementById('lvl-btns');
             grid.innerHTML = '';
-            for (let i = 1; i <= 10; i++) {
-                const btn = document.createElement('div');
-                btn.className = `level-btn ${i <= unlocked ? 'unlocked' : 'locked'}`;
-                btn.innerHTML = `<small>${ranks[i-1]}</small><br><b>LVL ${i}</b>`;
-                if (i <= unlocked) btn.onclick = () => startLevel(i);
-                grid.appendChild(btn);
+            for(let i=1; i<=10; i++) {
+                const b = document.createElement('div');
+                b.className = `lvl-box ${i <= progress ? 'unlocked' : 'locked'}`;
+                b.innerHTML = `<small>${ranks[i-1]}</small><br><b>LVL ${i}</b>`;
+                if(i <= progress) b.onclick = () => startLvl(i);
+                grid.appendChild(b);
             }
         }
 
-        function startLevel(lvl) {
-            currentLvl = lvl;
-            currentQIdx = 0;
-            score = 0;
-            document.getElementById('level-select').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            document.getElementById('current-rank-display').innerText = ranks[lvl-1];
-            loadQuestion();
+        function startLvl(l) {
+            activeLvl = l; qIdx = 0; score = 0;
+            document.getElementById('map').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            document.getElementById('rank-display').innerText = ranks[l-1];
+            loadQ();
         }
 
-        function loadQuestion() {
-            const data = quizDatabase[currentLvl][currentQIdx];
-            document.getElementById('q-count').innerText = `${currentQIdx + 1}/10`;
-            document.getElementById('question-text').innerText = data.q;
-            document.getElementById('progress-fill').style.width = `${(currentQIdx / 10) * 100}%`;
+        function loadQ() {
+            const q = levels[activeLvl-1][qIdx];
+            document.getElementById('q-num').innerText = `${qIdx+1}/10`;
+            document.getElementById('bar-fill').style.width = `${(qIdx/10)*100}%`;
+            document.getElementById('q-text').innerText = q[0];
             
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            data.a.forEach((opt, i) => {
-                const btn = document.createElement('div');
-                btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => handleAnswer(i);
-                container.appendChild(btn);
-            });
-        }
-
-        function handleAnswer(choice) {
-            if (choice === quizDatabase[currentLvl][currentQIdx].correct) score++;
-            currentQIdx++;
-            if (currentQIdx < 10) loadQuestion();
-            else finishLevel();
-        }
-
-        function finishLevel() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            
-            const passed = score >= 8; // Must get 8/10 to advance
-            document.getElementById('result-score').innerText = `Score: ${score}/10`;
-
-            if (passed) {
-                document.getElementById('result-title').innerText = "🔥 ASCENDED!";
-                if (currentLvl === unlocked && unlocked < 10) unlocked++;
-            } else {
-                document.getElementById('result-title').innerText = "💀 BURNED (Failed)";
+            const o = document.getElementById('opts');
+            o.innerHTML = '';
+            for(let i=1; i<=4; i++) {
+                const b = document.createElement('div');
+                b.className = 'opt-btn';
+                b.innerText = q[i];
+                b.onclick = () => {
+                    if((i-1) === q[5]) score++;
+                    qIdx++;
+                    if(qIdx < 10) loadQ(); else finish();
+                };
+                o.appendChild(b);
             }
+        }
+
+        function finish() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            const pass = score >= 8;
+            document.getElementById('res-title').innerText = pass ? "🔥 LEVEL ASCENDED!" : "💀 FAILED (Get 8/10)";
+            document.getElementById('res-score').innerText = `${score}/10`;
+            if(pass && activeLvl === progress && progress < 10) progress++;
         }
     </script>
 </body>
